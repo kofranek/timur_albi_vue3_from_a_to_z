@@ -24,3 +24,63 @@ v /public upravíme index.html na minimum
 v src necháme pouze main.js
         import { createApp } from 'vue'
         createApp(App).mount('#app')
+
+*********************************************************
+2. Komponenta App, interpolece, posluchači událostí
+*******************************************************
+v main.js
+        import { createApp } from 'vue'
+        import App from './App'
+        createApp(App).mount('#app')
+v src vytvoříme App.vue:
+        <template>
+        </template>
+
+        <script>
+          export default {
+          name: "App",
+        </script>
+
+        <style scoped>
+        </style>
+
+interpolace: {{proměnná či výraz }} zobrazení hodnoty v sekci template
+
+        <div>likes count: <strong> {{ likes }}</strong></div>
+        <div>dislikes count: <strong> {{ dilikes }}</strong></div>
+
+v template vytvoříme strukturu komponenty:
+    <template>
+      <div>
+        <button v-on:click="addLike">like</button>
+        <button v-on:click="addDislike">dislike</button>
+      </div>
+      <div>
+        <div>likes count: <strong> {{ likes }}</strong></div>
+        <div>dislikes count: <strong> {{ dilikes }}</strong></div>
+      </div>
+    </template>
+
+
+ve scripts vytvoříme datové elementy a metody:
+
+        <script>
+        export default {
+          name: "App",
+          data() {
+            return {
+              likes: 0,
+              dislikes: 0,
+            }
+          },
+          methods: {
+            addLike() {
+              this.likes++
+            },
+            addDislike() {
+              this.dislikes++
+            },
+          },
+        }
+        </script>
+
