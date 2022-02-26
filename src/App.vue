@@ -1,11 +1,15 @@
 <template>
-  <div>
-    <button v-on:click="addLike">like</button>
-    <button v-on:click="addDislike">dislike</button>
+  <div class="post">
+    <div><strong>Název:</strong>Poznámka o JavaScriptu</div>
+    <div><strong>Popis:</strong>JavaScript je univerzální programovací jazyk</div>
   </div>
-  <div>
-    <div>likes count: <strong> {{ likes }}</strong></div>
-    <div>dislikes count: <strong> {{ dislikes }}</strong></div>
+  <div class="post">
+    <div><strong>Název:</strong>Poznámka o JavaScriptu</div>
+    <div><strong>Popis:</strong>JavaScript je univerzální programovací jazyk</div>
+  </div>
+  <div class="post">
+    <div><strong>Název:</strong>Poznámka o JavaScriptu</div>
+    <div><strong>Popis:</strong>JavaScript je univerzální programovací jazyk</div>
   </div>
 </template>
 
@@ -14,21 +18,24 @@ export default {
   name: "App",
   data() {
     return {
-      likes: 0,
-      dislikes: 0,
     }
   },
   methods: {
-    addLike() {
-      this.likes++
-    },
-    addDislike() {
-      this.dislikes++
-    },
   },
 }
 </script>
 
 <style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.post {
+  padding: 15px;
+  border: 2px solid teal;
+  margin-top: 15px;
+}
 
 </style>

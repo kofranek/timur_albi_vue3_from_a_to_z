@@ -1,7 +1,7 @@
 1. založení projektu
 *********************************************
-npm install -g vue/cli
-případně
+npm install -g @vue/cli
+případněvu
 npm update -g @vue/cli
 vue --version
 
@@ -84,3 +84,53 @@ ve scripts vytvoříme datové elementy a metody:
         }
         </script>
 
+*********************************************************
+3. Styly
+*********************************************************
+
+pokud chceme ovlivnit template (kde je použita třída "post"):
+
+    <template>
+      <div class="post">
+        <div><strong>Název:</strong>Poznámka o JavaScriptu</div>
+        <div><strong>Popis:</strong>JavaScript je univerzální programovací jazyk</div>
+      </div>
+      <div class="post">
+        <div><strong>Název:</strong>Poznámka o JavaScriptu</div>
+        <div><strong>Popis:</strong>JavaScript je univerzální programovací jazyk</div>
+      </div>
+      <div class="post">
+        <div><strong>Název:</strong>Poznámka o JavaScriptu</div>
+        <div><strong>Popis:</strong>JavaScript je univerzální programovací jazyk</div>
+      </div>
+    </template>
+
+
+můžeme v sekci <style> uvést styly, které budou uplatněny v tomto a všech dceřinných komponentech:
+
+    <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .post {
+      padding: 15px;
+      border: 2px solid teal;
+      margin-top: 15px;
+    }
+    </style>
+
+pokud je sekce označena klíčovým slovem "scoped" styly se týkají jen dané komponenty
+    <style scoped>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .post {
+      padding: 15px;
+      border: 2px solid teal;
+      margin-top: 15px;
+    }
+    </style>
