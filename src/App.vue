@@ -1,15 +1,6 @@
 <template>
-  <div class="post">
-    <div><strong>Název:</strong>Poznámka o JavaScriptu</div>
-    <div><strong>Popis:</strong>JavaScript je univerzální programovací jazyk</div>
-  </div>
-  <div class="post">
-    <div><strong>Název:</strong>Poznámka o JavaScriptu</div>
-    <div><strong>Popis:</strong>JavaScript je univerzální programovací jazyk</div>
-  </div>
-  <div class="post">
-    <div><strong>Název:</strong>Poznámka o JavaScriptu</div>
-    <div><strong>Popis:</strong>JavaScript je univerzální programovací jazyk</div>
+  <div class="post" v-for="post in posts" >
+    <div><strong>{{post.title}}</strong> {{post.body}}</div>
   </div>
 </template>
 
@@ -18,10 +9,15 @@ export default {
   name: "App",
   data() {
     return {
+      posts:[
+        {id: 1, title: 'Hlavička dopisu 1', body: 'Obsah dopisu 1'},
+        {id: 2, title: 'Hlavička dopisu 2', body: 'Obsah dopisu 2'},
+        {id: 3, title: 'Hlavička dopisu 3', body: 'Obsah dopisu 3'},
+        {id: 4, title: 'Hlavička dopisu 4', body: 'Obsah dopisu 4'},
+      ]
     }
   },
-  methods: {
-  },
+  methods: {},
 }
 </script>
 

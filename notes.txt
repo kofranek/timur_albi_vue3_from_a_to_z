@@ -1,7 +1,7 @@
 1. založení projektu
 *********************************************
 npm install -g @vue/cli
-případněvu
+případně
 npm update -g @vue/cli
 vue --version
 
@@ -26,7 +26,7 @@ v src necháme pouze main.js
         createApp(App).mount('#app')
 
 *********************************************************
-2. Komponenta App, interpolece, posluchači událostí
+2. Komponenta App, interpolace, posluchači událostí
 *******************************************************
 v main.js
         import { createApp } from 'vue'
@@ -61,8 +61,7 @@ v template vytvoříme strukturu komponenty:
       </div>
     </template>
 
-
-ve scripts vytvoříme datové elementy a metody:
+v <script> vytvoříme datové elementy a metody:
 
         <script>
         export default {
@@ -105,7 +104,6 @@ pokud chceme ovlivnit template (kde je použita třída "post"):
       </div>
     </template>
 
-
 můžeme v sekci <style> uvést styly, které budou uplatněny v tomto a všech dceřinných komponentech:
 
     <style>
@@ -134,3 +132,28 @@ pokud je sekce označena klíčovým slovem "scoped" styly se týkají jen dané
       margin-top: 15px;
     }
     </style>
+
+*********************************************************
+4. Vykreslování v cyklu - direktiva v-for
+*********************************************************
+v <template> vytvoříme cyklus v-for, kde iterujeme položku post v pole posts:
+
+    <template>
+      <div class="post" v-for="post in posts" >
+        <div><strong>{{post.title}}</strong> {{post.body}}</div>
+      </div>
+    </template>
+
+poznámka: správně bychom měli ke každé položce dát unikátní klíč "key":
+
+v <script> v sekci data definujeme pole posts:
+    data() {
+        return {
+          posts:[
+            {id: 1, title: 'Hlavička dopisu 1', body: 'Obsah dopisu 1'},
+            {id: 2, title: 'Hlavička dopisu 2', body: 'Obsah dopisu 2'},
+            {id: 3, title: 'Hlavička dopisu 3', body: 'Obsah dopisu 3'},
+            {id: 4, title: 'Hlavička dopisu 4', body: 'Obsah dopisu 4'},
+          ]
+        }
+      },
