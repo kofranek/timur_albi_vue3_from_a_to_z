@@ -2,19 +2,28 @@
   <form @submit.prevent>
     <h4>Vytvoření položky</h4>
 
+<!--    <input class="input"-->
+<!--           type="text"-->
+<!--           placeholder="Název"-->
+<!--           v-bind:value="post.title"-->
+<!--           @input="post.title=$event.target.value"-->
+<!--    >-->
+<!--    <input class="input"-->
+<!--           type="text"-->
+<!--           placeholder="Obsah"-->
+<!--           v-bind:value="post.body"-->
+<!--           @input="post.body=$event.target.value"-->
+<!--    >-->
     <input class="input"
            type="text"
            placeholder="Název"
-           v-bind:value="post.title"
-           @input="post.title=$event.target.value"
+           v-model="post.title"
     >
     <input class="input"
            type="text"
            placeholder="Obsah"
-           v-bind:value="post.body"
-           @input="post.body=$event.target.value"
+          v-model="post.body"
     >
-
     <button class="btn"
     >
       Vytvořit položku
