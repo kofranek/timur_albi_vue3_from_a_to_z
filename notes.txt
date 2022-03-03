@@ -343,3 +343,52 @@ poznámka:
     components: {
         PostForm, PostList
     },
+
+
+********************************************************
+7. Props - předávání dat do komponenty
+*********************************************************
+
+Deklarujeme Props v komponente PostList:
+
+  <script>
+  export default {
+    name: "PostList",
+    props: {
+      posts: {
+        type: Array,
+        required: true
+      }
+    },
+  }
+  </script>
+
+  Při jejím volání v rodičovské komponentě předáme jako argument pole posts
+
+    <post-list :posts="posts "/>
+
+V komponentě PostForm odstraníme v button reakci na udílost click
+    @click.prevent="createPost"
+    zpětnou vazbu na rodičovsky komponent budeme dělat jinak
+
+    vytvoříme lokální objekt
+
+          post: {
+            title: '',
+            body: ''
+          }
+   a v template upravíme vzájemnou vazbu na tento objekt:
+
+       <input class="input"
+              type="text"
+              placeholder="Název"
+              v-bind:value="post.title"
+              @input="post.title = $event.target.value"
+       >
+       <input class="input"
+              type="text"
+              placeholder="Obsah"
+              v-bind:value="post.body"
+              @input="post.body = $event.target.value"
+       >
+
