@@ -392,3 +392,62 @@ V komponentě PostForm odstraníme v button reakci na udílost click
               @input="post.body = $event.target.value"
        >
 
+**********************************************************************
+8. V-MODEL, @emit - výmena dat mezi rodičovským a dceřiným komponentem
+**********************************************************************
+
+V komponentě PostForm
+
+    v-bind:value="post.title"                   input <------------- post.title
+    @input="post.title = $event.target.value"   input -------------> post.title
+a
+    v-bind:value="post.body"                    input <------------- post.body
+    @input="post.body = $event.target.value"    input -------------> post.body
+
+nahradíme
+
+    v-model="post.title"                       input <-------------> post.title
+    v-model="post.body"                        input <-------------> post.body
+
+tím uděláme oboustrannou vazbu na objekt post.
+
+
+Button propojíme událostí clixck s metodou createPost:
+
+    <button class="btn" @click="createPost">
+      Vytvořit položku
+    </button>
+
+v ní vytvoříme nový post a pomocí $emit vyxtvoříme událost
+
+$emit (název události, parametr, parametr....)
+
+k ní můžeme připojit parametry a výsledek pošleme nahoru
+
+  methods: {
+    createPost() {
+      this.post.id=Date.now()
+      this.$emit('create',this.post, 'druhý parametr', 'třetí parametr')
+      this.post = {
+        title: '',
+        body: ''
+      }
+    },
+
+Rodičovský komponent se na tuto událost může podepsat a zavolat obslužnou proceduru:
+
+    <post-form
+        @create="createPost"
+    />
+
+    a obslužná procedura (v daném přípasde createPost) přijímá parametry z dceřinné komponenty:
+
+  methods: {
+    createPost(post, secondParameter, thirdParameter){
+      console.log('post=', post)
+      console.log('secondparameter=',secondParameter)
+      console.log('thirdParameter=',thirdParameter)
+    }
+  },
+
+

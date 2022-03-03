@@ -1,6 +1,8 @@
 <template>
   <div class="app">
-    <post-form/>
+    <post-form
+        @create="createPost"
+    />
     <post-list :posts="posts "/>
   </div>
 </template>
@@ -22,21 +24,16 @@ export default {
         {id: 3, title: 'Hlavička dopisu 3', body: 'Obsah dopisu 3'},
         {id: 4, title: 'Hlavička dopisu 4', body: 'Obsah dopisu 4'},
       ],
-      title: '',
-      body: ''
+      // title: '',
+      // body: ''
     }
   },
   methods: {
-    createPost() {
-      const newPost = {
-        id: Date.now(),
-        title: this.title,
-        body: this.body,
-      }
-      this.posts.push(newPost)
-      this.title = ''
-      this.body = ''
-    },
+    createPost(post, secondParameter, thirdParameter){
+      console.log('post=', post)
+      console.log('secondParameter=',secondParameter)
+      console.log('thirdParameter=',thirdParameter)
+    }
   },
 }
 </script>

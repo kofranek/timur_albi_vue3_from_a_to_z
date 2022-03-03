@@ -4,16 +4,15 @@
     <input class="input"
            type="text"
            placeholder="Název"
-           v-bind:value="post.title"
-           @input="post.title = $event.target.value"
+           v-model="post.title"
     >
     <input class="input"
            type="text"
            placeholder="Obsah"
-           v-bind:value="post.body"
-           @input="post.body = $event.target.value"
+           v-model="post.body"
+
     >
-    <button class="btn"
+    <button class="btn" @click="createPost"
     >
       Vytvořit položku
     </button>
@@ -31,6 +30,16 @@ export default {
         body: ''
       }
     }
+  },
+  methods: {
+    createPost() {
+      this.post.id=Date.now()
+      this.$emit('create',this.post, 'druhý parametr', 'třetí parametr')
+      this.post = {
+        title: '',
+        body: ''
+      }
+    },
   }
 }
 
