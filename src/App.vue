@@ -1,48 +1,18 @@
 <template>
   <div class="app">
-    <form @submit.prevent>
-      <h4>Vytvoření položky</h4>
-      <!--    <input class="input"-->
-      <!--           type="text"-->
-      <!--           placeholder="Název"-->
-      <!--           v-bind:value="title"-->
-      <!--           @input="inputTitle"-->
-      <!--    >-->
-      <!--    <input class="input"-->
-      <!--           type="text"-->
-      <!--           placeholder="Obsah"-->
-      <!--           v-bind:value="body"-->
-      <!--           @input="inputBody"-->
-      <!--    >-->
-
-      <input class="input"
-             type="text"
-             placeholder="Název"
-             v-bind:value="title"
-             @input="title = $event.target.value"
-      >
-      <input class="input"
-             type="text"
-             placeholder="Obsah"
-             v-bind:value="body"
-             @input="body = $event.target.value"
-      >
-      <button class="btn"
-              @click.prevent="createPost"
-      >
-        Vytvořit položku
-      </button>
-    </form>
-
-
-    <div class="post" v-for="post in posts">
-      <div><strong>{{ post.title }}</strong> {{ post.body }}</div>
-    </div>
+    <post-form/>
+    <post-list/>
   </div>
 </template>
 
 <script>
+import PostForm from "@/components/PostForm";
+import PostList from "@/components/PostList";
 export default {
+  components: {
+    PostForm: PostForm,
+    PostList: PostList
+  },
   name: "App",
   data() {
     return {
@@ -57,12 +27,6 @@ export default {
     }
   },
   methods: {
-    // inputTitle(event) {
-    //   this.title = event.target.value
-    // },
-    // inputBody(event) {
-    //   this.body = event.target.value
-    // }
     createPost() {
       const newPost = {
         id: Date.now(),
@@ -88,31 +52,5 @@ export default {
   padding: 20px;
 }
 
-.post {
-  padding: 15px;
-  border: 2px solid teal;
-  margin-top: 15px;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.btn {
-  margin-top: 15px;
-  align-self: flex-end;
-  padding: 10px 15px;
-  background: none;
-  color: teal;
-  border: 1px solid teal;
-}
-
-.input {
-  width: 100%;
-  border: 1px solid teal;
-  padding: 10px 15px;
-  margin-top: 15px;
-}
 
 </style>

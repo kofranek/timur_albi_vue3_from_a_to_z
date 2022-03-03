@@ -302,3 +302,44 @@ Nakonec upravíme styly:
     }
     </style>
 
+********************************************************
+6. Dekompozice, vytvoření znovupoužitelných komponent
+*********************************************************
+
+Vytvoříme novou složku ./src/components
+
+a v ní komponenty PostForm a PostList
+
+v rodičovském pomponentu App vyřežeme příslušné položky z <template> a přeneseme
+je do kopmonent PostForm a PostList
+
+Obdobně s App přeneseme i přislušne styly
+
+V koponentě App tyto komponenty importujeme, a vytvoříme objekt components:
+
+<template>
+  <div class="app">
+    <post-form/>
+    <post-list/>
+  </div>
+</template>
+
+<script>
+  import PostForm from "@/components/PostForm";
+  import PostList from "@/components/PostList";
+  export default {
+    components: {
+      PostForm, PostList
+    },
+    ...
+
+
+poznámka:
+    components: {
+      PostForm: PostForm,
+      PostList: PostList
+    },
+  je totéž jako
+    components: {
+        PostForm, PostList
+    },
