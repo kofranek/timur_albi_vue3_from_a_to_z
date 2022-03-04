@@ -1,12 +1,18 @@
 <template>
-  <div class="post" v-for="post in posts_props">
-    <div><strong>{{ post.title }}</strong> {{ post.body }}</div>
+  <div >
+    <h4>Seznam položek</h4>
+    <post-item
+        v-for="post in posts_props"
+        :post_props="post"
+    />
   </div>
 </template>
 
 <script>
+import PostItem from "@/components/PostItem";
 export default {
   name: "PostList",
+  components: {PostItem},
   props: {
     posts_props: {
       type: Array,
@@ -17,10 +23,6 @@ export default {
 </script>
 
 <style scoped>
-.post {
-  padding: 15px;
-  border: 2px solid teal;
-  margin-top: 15px;
-}
+
 
 </style>

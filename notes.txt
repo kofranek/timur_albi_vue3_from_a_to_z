@@ -485,3 +485,38 @@ Rodičovský komponent se na tuto událost může podepsat a zavolat obslužnou 
                                                                  'třetí parametr')
                                                                ....
                                                                }
+
+
+**********************************************************************
+9. Další dekompozice - vytvořeni koponenty pro jednotlivou položku
+**********************************************************************
+
+Z komponenty PostList vytáhneme část, která se týká jedné položky -
+vytvoříme položku PostItem:
+
+<template>
+  <div class="post">
+    <strong>{{ post_props.title }}</strong> {{ post_props.body }}
+  </div>
+</template>
+
+v ní deklarujeme props - post_props v němž komponente PostList pošle obsah
+jednotlivé položky post:
+
+<template>
+  <div >
+    <h4>Seznam položek</h4>
+    <post-item
+        v-for="post in posts_props"
+        :post_props="post"
+    />
+  </div>
+</template>
+
+
+App                PostForm
+@create <--post--- $emit(create, post)
+
+App                           PostList                  PostItem
+:posts_props -----posts-----> posta_props
+                              :post_props ----post----> post_props
