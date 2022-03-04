@@ -355,7 +355,7 @@ Deklarujeme Props v komponente PostList:
   export default {
     name: "PostList",
     props: {
-      posts: {
+      posts_props: {
         type: Array,
         required: true
       }
@@ -363,9 +363,29 @@ Deklarujeme Props v komponente PostList:
   }
   </script>
 
+a pak se na hodnotu posts, která jako props přichází z rodičovnské
+komponenty můžeme odvplávat:
+
+  <template>
+    <div class="post" v-for="post_props in posts">
+      <div><strong>{{ post.title }}</strong> {{ post.body }}</div>
+    </div>
+  </template>
+
   Při jejím volání v rodičovské komponentě předáme jako argument pole posts
 
-    <post-list :posts="posts "/>
+    <post-list :posts_props="posts "/>
+
+app.vue                                       PostList.vue
+   :posts_props = proměná --------------------->  post_props
+
+                                               props: {
+                                                  post_props: { type:xxx
+                                                       default:xxx
+                                                        required: true
+                                                      }
+                                               }
+
 
 V komponentě PostForm odstraníme v button reakci na udílost click
     @click.prevent="createPost"
@@ -418,7 +438,7 @@ Button propojíme událostí clixck s metodou createPost:
       Vytvořit položku
     </button>
 
-v ní vytvoříme nový post a pomocí $emit vyxtvoříme událost
+v ní vytvoříme nový post a pomocí $emit vytvoříme událost
 
 $emit (název události, parametr, parametr....)
 
@@ -451,3 +471,17 @@ Rodičovský komponent se na tuto událost může podepsat a zavolat obslužnou 
   },
 
 
+   App.vue                                             PosForm.vue
+
+                                                           @click="createPost"
+                                                                       |
+                                                                       |
+                                                                       v
+                                                               createPost(){
+                                                               ....
+ @create="obslužnáProcedura"<-------událost create--------- this.$emit('create',
+                                                                 this.post,
+                                                                 'druhý parametr',
+                                                                 'třetí parametr')
+                                                               ....
+                                                               }

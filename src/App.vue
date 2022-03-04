@@ -3,7 +3,7 @@
     <post-form
         @create="createPost"
     />
-    <post-list :posts="posts "/>
+    <post-list :posts_props="posts"/>
   </div>
 </template>
 
@@ -29,16 +29,14 @@ export default {
     }
   },
   methods: {
-    createPost(post, secondParameter, thirdParameter){
-      console.log('post=', post)
-      console.log('secondParameter=',secondParameter)
-      console.log('thirdParameter=',thirdParameter)
+    createPost(post) {
+      this.posts.push(post)
     }
   },
 }
 </script>
 
-<style scoped>
+<style >
 * {
   margin: 0;
   padding: 0;

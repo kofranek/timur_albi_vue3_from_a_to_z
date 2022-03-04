@@ -1,5 +1,5 @@
 <template>
-  <div class="post" v-for="post in posts">
+  <div class="post" v-for="post in posts_props">
     <div><strong>{{ post.title }}</strong> {{ post.body }}</div>
   </div>
 </template>
@@ -8,7 +8,7 @@
 export default {
   name: "PostList",
   props: {
-    posts: {
+    posts_props: {
       type: Array,
       required: true
     }
