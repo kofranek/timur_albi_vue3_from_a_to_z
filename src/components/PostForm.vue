@@ -12,16 +12,20 @@
            v-model="post.body"
 
     >
-    <button class="btn" @click="createPost"
+    <my-button
+        @click="createPost"
+        style="align-self: flex-end; margin-top: 15px"
     >
       Vytvořit položku
-    </button>
+    </my-button>
   </form>
 
 </template>
 
 <script>
+import MyButton from "@/components/UI/MyButton"
 export default {
+  components: {MyButton},
   name: "PostForm",
   data() {
     return {
@@ -51,15 +55,6 @@ export default {
 form {
   display: flex;
   flex-direction: column;
-}
-
-.btn {
-  margin-top: 15px;
-  align-self: flex-end;
-  padding: 10px 15px;
-  background: none;
-  color: teal;
-  border: 1px solid teal;
 }
 
 .input {

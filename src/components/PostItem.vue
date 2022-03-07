@@ -5,13 +5,16 @@
       <div><strong>Obsah: </strong>{{ post_props.body }}</div>
     </div>
     <div class="post__btns">
-      <button class="btn" @click="deletePost">Odstranit</button>
+      <my-button @click="deletePost">Odstranit</my-button>
     </div>
   </div>
 </template>
 
 <script>
+import MyButton from '@/components/UI/MyButton'
+
 export default {
+  components: {MyButton},
   name: "PostItem",
   props: {
     post_props: {

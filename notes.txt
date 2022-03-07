@@ -605,3 +605,67 @@ App                           PostList                  PostItem
  odstraní ze seznamu posts příslušnou položku post, kterou dostane jako argument
 
 
+*********************************************************************
+11. Knihovna UI komponentů
+**********************************************************************
+
+vytvoříme složku /components/UI v níž budeme umisťovat komponenty
+uživatelského rozhraní
+
+v této složce vytvoříme komponentu MyButton (a do ní přeneseme i příslušný styl
+třídy .bttn z komponenty PostForm
+
+    <template>
+    <button class="btn">
+      <slot></slot>
+    </button>
+    </template>
+    ...
+    <style scoped>
+    .btn {
+      /*margin-top: 15px;*/
+      padding: 10px 15px;
+      background: none;
+      color: teal;
+      border: 1px solid teal;
+    }
+    </style>
+
+Sloty <slots> slouží zde pro zobrazení příslušných popisů tlačítek
+z instancí komponenty MyButton.
+
+Instanci komponenty MyButton využijeme v komponentě PosForm místo původního
+tlačítka <button>:
+
+    <my-button
+        @click="createPost"
+        style="align-self: flex-end; margin-top: 15px"
+    >
+      Vytvořit položku
+    </my-button>
+
+    nezapomeneme ji importovat a registrovat (a také trochu upravit styl)
+
+    <script>
+    import MyButton from "@/components/UI/MyButton"
+
+    export default {
+      components: {MyButton},
+      ...
+      ...
+
+Obdobně to uděláme v komponentě PostItem:
+
+    ...
+    <div class="post__btns">
+      <my-button @click="deletePost">Odstranit</my-button>
+    </div>
+    ...
+    <script>
+    import MyButton from "@/components/UI/MyButton"
+    export default {
+      components: {MyButton},
+      ...
+      ...
+
+Nyní mají všechnyx komponenty tlačítka stejný tvar
