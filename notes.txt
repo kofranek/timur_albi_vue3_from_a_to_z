@@ -368,7 +368,7 @@ komponenty můžeme odvplávat:
 
   <template>
     <div class="post" v-for="post_props in posts">
-      <div><strong>{{ post.title }}</strong> {{ post.body }}</div>
+    <div><strong>{{ post.title }}</strong> {{ post.body }}</div>
     </div>
   </template>
 
@@ -520,3 +520,88 @@ App                PostForm
 App                           PostList                  PostItem
 :posts_props -----posts-----> posta_props
                               :post_props ----post----> post_props
+
+
+*********************************************************************
+10. Odstranění prvku ze seznamu
+**********************************************************************
+
+1. Komponenta PostItem:
+   nejprve upravíme trochu komponentu postItem, kde přidáme tlačítko:
+
+    <template>
+      <div class="post">
+        <div>
+          <div><strong>Název: </strong>{{ post_props.title }}</div>
+          <div><strong>Obsah: </strong>{{ post_props.body }}</div>
+        </div>
+        <div class="post__btns">
+          <button class="btn" @click="deletePost">Odstranit</button>
+        </div>
+      </div>
+    </template>
+
+   ostylizujeme:
+
+    <style scoped>
+    .post {
+      padding: 15px;
+      border: 2px solid teal;
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    </style>
+
+   vytvoříme obslužnou metodu deletePost:
+
+    deletePost() {
+       console.log('PostItem: post_props=', this.post_props)
+       this.$emit('deletePost', this.post_props)
+    }
+
+ ... která emituje událostn deletePost a předává v argumentu post_props
+ její rodičovský komponent
+
+2. Komponenta PostList:
+
+ od dceřiné komponenty post-item reaguje na událost deletePost:
+
+     <div>
+       <h4>Seznam položek</h4>
+       <post-item
+           v-for="post in posts_props"
+           :post_props="post" :key="post.id"
+           @deletePost="deletePost"
+       />
+     </div>
+
+ obslužná procedura deletePost emituje událost clrPost a předává jako
+ argument post
+
+     deletePost(post) {
+       console.log('PostList:delete:',post)
+       this.$emit('clrPost', post)
+     },
+
+3. Komponenta App
+
+ od dceřiné komponenty PostList reaguje na událost clrPost:
+
+     ...
+        <post-list :posts_props="posts" @clrPost="deletePost"/>
+     ....
+
+ její obslužná procedure deletePost:
+
+    deletePost(post) {
+      const idx = this.posts.findIndex((el) => {
+        return (el.id === post.id)
+      })
+      this.posts.splice(idx,1)
+    },
+
+ odstraní ze seznamu posts příslušnou položku post, kterou dostane jako argument
+
+

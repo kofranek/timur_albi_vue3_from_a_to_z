@@ -3,13 +3,14 @@
     <post-form
         @create="createPost"
     />
-    <post-list :posts_props="posts"/>
+    <post-list :posts_props="posts" @clrPost="deletePost"/>
   </div>
 </template>
 
 <script>
 import PostForm from "@/components/PostForm";
 import PostList from "@/components/PostList";
+
 export default {
   components: {
     PostForm: PostForm,
@@ -31,12 +32,19 @@ export default {
   methods: {
     createPost(post) {
       this.posts.push(post)
-    }
-  },
+    },
+    deletePost(post) {
+      const idx = this.posts.findIndex((el) => {
+        return (el.id === post.id)
+      })
+      this.posts.splice(idx,1)
+    },
+
+  }
 }
 </script>
 
-<style >
+<style>
 * {
   margin: 0;
   padding: 0;
