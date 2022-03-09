@@ -3,7 +3,10 @@
     <post-form
         @create="createPost"
     />
-    <post-list :posts_props="posts" @clrPost="deletePost"/>
+    <post-list
+        :posts_props="posts"
+        @clrPost="deletePost"
+    />
   </div>
 </template>
 
@@ -34,10 +37,14 @@ export default {
       this.posts.push(post)
     },
     deletePost(post) {
-      const idx = this.posts.findIndex((el) => {
-        return (el.id === post.id)
-      })
-      this.posts.splice(idx,1)
+      // const idx = this.posts.findIndex((el) => {
+      //   return (el.id === post.id)
+      // })
+      // this.posts.splice(idx,1)
+      //***************************************************************
+      // místo findIndex a splice použijeme k odstranění položky filter
+      //***************************************************************
+      this.posts = this.posts.filter(p =>p.id !== post.id)
     },
 
   }

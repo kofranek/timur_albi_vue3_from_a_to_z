@@ -3,8 +3,9 @@
     <h4>Seznam položek</h4>
     <post-item
         v-for="post in posts_props"
-        :post_props="post" :key="post.id"
-        @deletePost="deletePost"
+        :post_props="post"
+        :key="post.id"
+        @deletePost="$emit('clrPost', post)"
     />
   </div>
 </template>
@@ -22,10 +23,10 @@ export default {
     }
   },
   methods: {
-    deletePost(post) {
-      console.log('PostList:delete:',post)
-      this.$emit('clrPost', post)
-    },
+    // deletePost(post) {
+    //   console.log('PostList:delete:',post)
+    //   this.$emit('clrPost', post)
+    // },
   }
 }
 </script>

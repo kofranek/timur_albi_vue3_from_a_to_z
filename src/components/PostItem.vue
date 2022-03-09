@@ -5,7 +5,7 @@
       <div><strong>Obsah: </strong>{{ post_props.body }}</div>
     </div>
     <div class="post__btns">
-      <my-button @click="deletePost">Odstranit</my-button>
+      <my-button @click="$emit('deletePost',post_props)">Odstranit</my-button>
     </div>
   </div>
 </template>
@@ -23,10 +23,10 @@ export default {
     }
   },
   methods: {
-    deletePost() {
-      console.log('PostItem: post_props=', this.post_props)
-      this.$emit('deletePost', this.post_props)
-    }
+    // deletePost() {
+    //   console.log('PostItem: post_props=', this.post_props)
+    //   this.$emit('deletePost', this.post_props)
+    // }
   }
 }
 </script>

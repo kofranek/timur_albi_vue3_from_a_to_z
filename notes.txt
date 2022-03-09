@@ -728,7 +728,7 @@ vytvořeny dvě její instance
            v-model="post.body"
     />
 ********************************************************
-V_MODEL a atributami:
+13. V_MODEL a atributami:
 ******************************************************
 Ve vue 3 můžeme v-model spojit s pomnenovaným propsem value (nebo newvalue...)
 to mimo jiné dává možnost použít v jedné komponentě více v-model-ů pro více props-ů
@@ -795,3 +795,116 @@ this.$emit('update:newvalue', newVal)
 this.$emit('update:title', newVal)
 this.$emit('update:body', newVal)
 this.$emit('update:email', newVal)
+
+
+*********************************************************************
+14. Odstranění prvku ze seznamu - s využitím $emit
+**********************************************************************
+
+nám už pracuje:
+
+PosItem ---post.props--->PostList:
+
+        <div class="post__btns">
+          <my-button @click="deletePost">Odstranit</my-button>
+        </div>
+        ...
+        props: {
+            post_props: {
+            type: Object,
+            required: true,
+            }
+        ...
+        deletePost() {
+          this.$emit('deletePost', this.post_props)
+        }
+
+
+PostList ---post_props--->App:
+
+        <post-item
+            v-for="post in posts_props"
+            :post_props="post"
+            :key="post.id"
+            @deletePost="deletePost"
+        />
+        ...
+        props: {
+          posts_props: {
+            type: Array,
+            required: true
+          }
+        ...
+        deletePost(post) {
+          console.log('PostList:delete:',post)
+          this.$emit('clrPost', post)
+        },
+
+App:
+        <post-list
+            :posts_props="posts"
+            @clrPost="deletePost"
+        />
+        ...
+        deletePost(post) {
+          const idx = this.posts.findIndex((el) => {
+            return (el.id === post.id)
+          })
+          this.posts.splice(idx,1)
+        },
+
+můžeme to zkrátit ('$emit použijeme přímo v template)':
+
+PosItem ---post.props--->PostList:
+
+        <div class="post__btns">
+            <my-button @click="$emit('deletePost',post_props)">Odstranit</my-button>
+        </div>
+        ...
+        props: {
+            post_props: {
+            type: Object,
+            required: true,
+            }
+        ...
+        //deletePost() {
+        //  this.$emit('deletePost', this.post_props)
+        //}
+
+PostList ---post_props--->App:
+
+        <post-item
+            v-for="post in posts_props"
+            :post_props="post"
+            :key="post.id"
+            @deletePost="$emit('clrPost', post)"
+        />
+        ...
+        props: {
+          posts_props: {
+            type: Array,
+            required: true
+          }
+        ...
+        //deletePost(post) {
+        //  console.log('PostList:delete:',post)
+        //  this.$emit('clrPost', post)
+        //},
+
+App:
+        <post-list
+            :posts_props="posts"
+            @clrPost="deletePost"
+        />
+        ...
+
+        deletePost(post) {
+          // const idx = this.posts.findIndex((el) => {
+          //   return (el.id === post.id)
+          // })
+          // this.posts.splice(idx,1)
+          //***************************************************************
+          // místo findIndex a splice použijeme k odstranění položky filter
+          //***************************************************************
+          this.posts = this.posts.filter(p =>p.id !== post.id)
+        },
