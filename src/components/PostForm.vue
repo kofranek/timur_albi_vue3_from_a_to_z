@@ -1,17 +1,14 @@
 <template>
   <form @submit.prevent>
     <h4>Vytvoření položky</h4>
-    <input class="input"
-           type="text"
+    <my-input type="text"
            placeholder="Název"
            v-model="post.title"
-    >
-    <input class="input"
-           type="text"
+    />
+    <my-input type="text"
            placeholder="Obsah"
            v-model="post.body"
-
-    >
+    />
     <my-button
         @click="createPost"
         style="align-self: flex-end; margin-top: 15px"
@@ -23,9 +20,10 @@
 </template>
 
 <script>
-import MyButton from "@/components/UI/MyButton"
+//import MyButton from "@/components/UI/MyButton"
+
 export default {
-  components: {MyButton},
+  //components: {MyButton},
   name: "PostForm",
   data() {
     return {
@@ -57,10 +55,5 @@ form {
   flex-direction: column;
 }
 
-.input {
-  width: 100%;
-  border: 1px solid teal;
-  padding: 10px 15px;
-  margin-top: 15px;
-}
+
 </style>
