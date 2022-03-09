@@ -727,45 +727,33 @@ vytvořeny dvě její instance
            placeholder="Obsah"
            v-model="post.body"
     />
-
+********************************************************
 V_MODEL a atributami:
+******************************************************
 Ve vue 3 můžeme v-model spojit s pomnenovaným propsem value (nebo newvalue...)
+to mimo jiné dává možnost použít v jedné komponentě více v-model-ů pro více props-ů
 místo  v-model="post.title"
 voláme v-model:value="post.title"
 
+    RODIČOVSKÁ KOMPONENTA PosItem - v ní je instance dcečiné komponenty MyInput:
+
     <my-input type="text"
            placeholder="Název"
-           v-model:value="post.title"
+           v-model:value="post.title"     <--------místo v-model="post.title"
     />
     <my-input type="text"
            placeholder="Obsah"
-           v-model:value="post.body"
+           v-model:value="post.body"     <---------místo v-model="post-body"
     />
 
-a v komponentě MyInput definujeme pojmebovaný props balue (nebo newvalue...)
+   DCEŘINÁ KOMPONENTA MyInput
+   v dceřinné komponentě MyInput definujeme pojmebovaný props value (nebo newvalue...)
 
-místo props:
-        modelValue: [String, Number]
-napíšeme:
-        value: [String, Number]
-
-v <input > místo atributu
-        :value="modelValue"
-napíšeme pojmenovaný props value (nebo newvalue ...):
-        :value="value"
-
-a v oblužné proceduře updateInput(event)
-místo
-      this.$emit('update:modelValue', event.target.value)
-napíšeme 'update:value' (nebo 'update:newvalue...')
-      this.$emit('update:value', event.target.value)
-
-Komponenta MyInput bude tedy vypadat:
     <template>
       <input
           class='input'
           type="text"
-          :value="value"
+          :value="value"           <---------- místo :value="modelValue"
           @input="updateInput"
       >
     </template>
@@ -774,12 +762,12 @@ Komponenta MyInput bude tedy vypadat:
     export default {
       name: "MyInput",
       props: {
-        value: [String, Number]
+        value: [String, Number]        <--------- místo modelValue: [String, Number]
       },
       methods: {
         updateInput(event) {
           console.log('event=',event.target.value)
-          this.$emit('update:value', event.target.value)
+          this.$emit('update:value', event.target.value) <--- místo  this.$emit('update:modelValue',...
         }
       }
     }
