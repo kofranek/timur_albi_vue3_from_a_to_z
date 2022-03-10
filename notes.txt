@@ -1060,3 +1060,18 @@ Volání komponenty v rodičovské komponentě App:
     }
     </script>
 
+****************************************************************
+17. Modifikátory v-model
+****************************************************************
+v-model.trim
+    Modifikátor .trimautomaticky ořezává bílé znaky ze vstupů uživatele.
+    Můžeme to použít napsáním:
+    <input v-model.trim="msg" />
+v-model.number
+    Modifikátor .numbernám umožňuje automaticky převést vše, co je zadáno, na číslo.
+    Například můžeme napsat:
+    <input v-model.number="numApples" type="number" />
+v-model.lazy
+    Modifikátor .lazy se po každé události v-modelsynchronizuje se stavem instance Vue .change
+    Ve výchozím nastavení se v-modelsynchronizuje se stavem po každé inputudálosti.
+    <input v-model.lazy="msg" />
