@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="posts_props.length>0">
     <h4>Seznam položek</h4>
     <post-item
         v-for="post in posts_props"
@@ -8,6 +8,7 @@
         @deletePost="$emit('clrPost', post)"
     />
   </div>
+  <h4 v-else style="color: red">Nejsou žádné položky</h4>
 </template>
 
 <script>

@@ -1,3 +1,4 @@
+*********************************************
 1. založení projektu
 *********************************************
 npm install -g @vue/cli
@@ -908,3 +909,154 @@ App:
           //***************************************************************
           this.posts = this.posts.filter(p =>p.id !== post.id)
         },
+
+
+*********************************************************************
+15. Podmíněné vykreslování
+**********************************************************************
+
+v-if, v-esle-if, v-else  (nezobrazené prvky se neobjeví v DOM)
+příklad PostList:
+
+    <template>
+      <div v-if="posts_props.length>0">
+        <h4>Seznam položek</h4>
+        <post-item
+            v-for="post in posts_props"
+            :post_props="post"
+            :key="post.id"
+            @deletePost="$emit('clrPost', post)"
+        />
+      </div>
+      <h4 v-else style="color: red">Nejsou žádné položky</h4>
+    </template>
+
+v-show (podmíněné vykrelování ale zachování prvků v DOMu)
+
+    <template>
+      <div v-show="posts_props.length>0">
+        <h4>Seznam položek</h4>
+        <post-item
+            v-for="post in posts_props"
+            :post_props="post"
+            :key="post.id"
+            @deletePost="$emit('clrPost', post)"
+        />
+      </div>
+      <h4 v-show="posts_props.length===0" style="color: red">Nejsou žádné položky</h4>
+    </template>
+
+(v naší aplikaci použijeme v-if a v-else)
+
+*********************************************************************
+16. Modální okno
+**********************************************************************
+
+Vytvoříme znouvupoužitelnou komponentu modálního dialogového okna
+@/components/UI/MyDialog
+
+importujeme ho do @/components/UI/index.js a přidáme ho do pole komponent:
+
+    import MyButton from "@/components/UI/MyButton"
+    import MyInput from "@/components/UI/MyInput"
+    import MyDialog from "@/components/UI/MyDialog"
+
+    export default [
+        MyButton,
+        MyInput,
+        MyDialog
+    ]
+
+Vytvoříme vlastní komponentu @/components/UI/MyDialog:
+
+    <template>
+      <div class="dialog" v-if="show" @click="hideDialog">
+        <div @click.stop class="dialog__content"> <--@clik.stop zabráníme šíření eventu
+          <slot></slot>                               když je kliknuto na obsah
+                                                      uvnitř dialogového okna
+        </div>
+      </div>
+    </template>
+
+    <script>
+    export default {
+      name: "MyDialog",
+      props: {
+        show: {                       <----- props show
+          type: Boolean,
+          default: false,
+        }
+      },
+      methods: {
+        hideDialog() {            <--- obsluha kliknuto na dialogové okno
+          this.$emit('update:show', false)  <---emitujem událost a nastavení parametru na false
+        }
+      }
+    }
+    </script>
+    <style scoped>
+    .dialog {
+      top: 0;        <---okno je po celé ovrazovce
+      bottom: 0;
+      right: 0;
+      left: 0;
+      background: rgba(0,0,0,0.5); <---okno je tmavé a průzračnost 0.5
+      position:fixed;
+      display: flex;
+    }
+    .dialog__content {
+      margin:auto;
+      background:white;
+      border-radius:12px;
+      min-height:50px;
+      min-width:300px;
+      padding:20px;
+    }
+    </style>
+
+Volání komponenty v rodičovské komponentě App:
+
+    <template>
+      <div class="app">
+        <h1>Dialog s položkami</h1>
+        <my-button
+            @click="showDialog"     <--- tlačítko otevře dialog. okno
+            style="margin:15px 0;"
+        >Vytvořit položku
+        </my-button>
+        <my-dialog v-model:show="dialogVisible">  <---oboustranná vazba, props show
+                                                      pojmenovaný v-model:show,
+          <post-form                   <--post-form dáme dovnitř my.button
+              @create="createPost"
+          />
+        </my-dialog>
+        ...
+      </div>
+    </template>
+
+    <script>
+    import PostForm from "@/components/PostForm";
+    import PostList from "@/components/PostList";
+
+    export default {
+      ....
+      data() {
+        return {
+         ....
+          dialogVisible: false, <--- vazba na hodnotu props v-model:show
+        }
+      },
+      methods: {
+        createPost(post) {
+          this.posts.push(post)
+          this.dialogVisible = false    <--- po zadání položky uzavře dial. okno
+        },
+        ...
+        showDialog() {             <--- obsluha otevření dialog. okna
+          this.dialogVisible = true
+        },
+
+      }
+    }
+    </script>
+

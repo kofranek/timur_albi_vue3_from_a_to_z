@@ -1,8 +1,17 @@
 <template>
   <div class="app">
-    <post-form
-        @create="createPost"
-    />
+    <h1>Dialog s položkami</h1>
+    <my-button
+        @click="showDialog"
+        style="margin:15px 0;"
+    >Vytvořit položku
+    </my-button>
+    <my-dialog v-model:show="dialogVisible">
+      <post-form
+          @create="createPost"
+      />
+    </my-dialog>
+
     <post-list
         :posts_props="posts"
         @clrPost="deletePost"
@@ -28,13 +37,13 @@ export default {
         {id: 3, title: 'Hlavička dopisu 3', body: 'Obsah dopisu 3'},
         {id: 4, title: 'Hlavička dopisu 4', body: 'Obsah dopisu 4'},
       ],
-      // title: '',
-      // body: ''
+      dialogVisible: false,
     }
   },
   methods: {
     createPost(post) {
       this.posts.push(post)
+      this.dialogVisible = false
     },
     deletePost(post) {
       // const idx = this.posts.findIndex((el) => {
@@ -44,7 +53,10 @@ export default {
       //***************************************************************
       // místo findIndex a splice použijeme k odstranění položky filter
       //***************************************************************
-      this.posts = this.posts.filter(p =>p.id !== post.id)
+      this.posts = this.posts.filter(p => p.id !== post.id)
+    },
+    showDialog() {
+      this.dialogVisible = true
     },
 
   }
