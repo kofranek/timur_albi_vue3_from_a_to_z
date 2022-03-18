@@ -780,16 +780,34 @@ oboustranná vazba s atributem v dceřinné komponentě
 není-li v-model spojen s atributem (přes dvojtečku) je iplicitní
 název atributu:
 
-rodičovská komp.:        dceřinná komponenta:
+rodičovská komp.:        dceřinná komponenta (definovaná v jako props):
 v-model         <---->   modelValue
+
+props
+ modelValue
 
 nebo pojmenovaná
 
 v-model:value   <-------> value
-v-model:nevalue <-------> newvalue
+prosp
+   value
+
+v-model:newvalue <-------> newValue
+props
+   newValue
+
 v-model:title   <-------> title
+props
+  title
+
 v-model:body    <-------> body
+props
+  body
+
 v-model:email   <-------> email
+props
+  email
+
 
 this.$emit('update:modelValue', newVal)
 this.$emit('update:newvalue', newVal)
@@ -968,9 +986,20 @@ importujeme ho do @/components/UI/index.js a přidáme ho do pole komponent:
     ]
 
 Vytvoříme vlastní komponentu @/components/UI/MyDialog:
-
+<!--<template>-->                    <---NEPOJMENOVANŸ v-model
+    <!--  <div class="dialog"-->
+    <!--       v-if="modelValue"-->  <---o viditelnosti rozhoduje hodnota v propsu ModelValue
+    <!--       @click="hideDialog">-->
+    <!--    <div @click.stop class="dialog__content">-->
+    <!--      <slot></slot>-->
+    <!--    </div>-->
+    <!--  </div>-->
+    <!--</template>-->
     <template>
-      <div class="dialog" v-if="show" @click="hideDialog">
+      <div class="dialog"
+          v-if="show"           <---o viditelnosti rozhoduje hodnota v propsu show
+                                    (u nepojmenovaných by bylo v-if=modelValue)
+          @click="hideDialog">  <---po kliknutí volá hideDialog
         <div @click.stop class="dialog__content"> <--@clik.stop zabráníme šíření eventu
           <slot></slot>                               když je kliknuto na obsah
                                                       uvnitř dialogového okna
@@ -982,14 +1011,21 @@ Vytvoříme vlastní komponentu @/components/UI/MyDialog:
     export default {
       name: "MyDialog",
       props: {
-        show: {                       <----- props show
+      // modelValue: {          <----- props modelValue (u pojmenovaných show :{... )
+      //   type: Boolean,
+      //   default: false,
+      // }
+        show: {                       <----- props show (u nepojmenovaných ModelValue :{... )
           type: Boolean,
           default: false,
         }
       },
       methods: {
         hideDialog() {            <--- obsluha kliknuto na dialogové okno
+          // this.$emit('update:modelValue', false) <--událost onUpdate u nepojmenovaných
           this.$emit('update:show', false)  <---emitujem událost a nastavení parametru na false
+                                                tím rovnou nastavíme hodnotu propsu na false
+                                                (u nepojmenovaných this.$emits('update:modelValue',false))
         }
       }
     }
@@ -1026,6 +1062,8 @@ Volání komponenty v rodičovské komponentě App:
         </my-button>
         <my-dialog v-model:show="dialogVisible">  <---oboustranná vazba, props show
                                                       pojmenovaný v-model:show,
+                                                      (u nepojmenovaných by bylo
+                                                      v-model="dialogVisible)
           <post-form                   <--post-form dáme dovnitř my.button
               @create="createPost"
           />

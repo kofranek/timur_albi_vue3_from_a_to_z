@@ -2,12 +2,12 @@
   <form @submit.prevent>
     <h4>Vytvoření položky</h4>
     <my-input type="text"
-           placeholder="Název"
-           v-model="post.title"
+              placeholder="Název"
+              v-model:value="post.title"
     />
     <my-input type="text"
-           placeholder="Obsah"
-           v-model="post.body"
+              placeholder="Obsah"
+              v-model:value="post.body"
     />
     <my-button
         @click="createPost"

@@ -1,5 +1,16 @@
+<!--<template>-->
+<!--  <div class="dialog"-->
+<!--       v-if="modelValue"-->
+<!--       @click="hideDialog">-->
+<!--    <div @click.stop class="dialog__content">-->
+<!--      <slot></slot>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</template>-->
 <template>
-  <div class="dialog" v-if="show" @click="hideDialog">
+  <div class="dialog"
+       v-if="show"
+       @click="hideDialog">
     <div @click.stop class="dialog__content">
       <slot></slot>
     </div>
@@ -10,6 +21,10 @@
 export default {
   name: "MyDialog",
   props: {
+    // modelValue: {
+    //   type: Boolean,
+    //   default: false,
+    // }
     show: {
       type: Boolean,
       default: false,
@@ -17,6 +32,8 @@ export default {
   },
   methods: {
     hideDialog() {
+      console.log('hide Dialog')
+      // this.$emit('update:modelValue', false)
       this.$emit('update:show', false)
     }
   }

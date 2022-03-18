@@ -1,11 +1,17 @@
 <template>
   <div class="app">
     <h1>Dialog s položkami</h1>
+    <input type="text" v-model.number="modificatorValue">
     <my-button
         @click="showDialog"
         style="margin:15px 0;"
     >Vytvořit položku
     </my-button>
+<!--    <my-dialog v-model="dialogVisible">-->
+<!--      <post-form-->
+<!--          @create="createPost"-->
+<!--      />-->
+<!--    </my-dialog>-->
     <my-dialog v-model:show="dialogVisible">
       <post-form
           @create="createPost"
@@ -38,6 +44,7 @@ export default {
         {id: 4, title: 'Hlavička dopisu 4', body: 'Obsah dopisu 4'},
       ],
       dialogVisible: false,
+      modificatorValue:''
     }
   },
   methods: {
