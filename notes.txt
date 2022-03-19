@@ -1106,10 +1106,65 @@ v-model.trim
     Můžeme to použít napsáním:
     <input v-model.trim="msg" />
 v-model.number
-    Modifikátor .numbernám umožňuje automaticky převést vše, co je zadáno, na číslo.
+    Modifikátor .number nám umožňuje automaticky převést vše, co je zadáno, na číslo.
     Například můžeme napsat:
     <input v-model.number="numApples" type="number" />
 v-model.lazy
     Modifikátor .lazy se po každé události v-modelsynchronizuje se stavem instance Vue .change
     Ve výchozím nastavení se v-modelsynchronizuje se stavem po každé inputudálosti.
     <input v-model.lazy="msg" />
+
+****************************************************************
+18. Práce se serverem - {JSON} Placeholser aknihovna axios
+****************************************************************
+
+využijeme službu {JSON} Placeholder
+     https://jsonplaceholder.typicode.com/
+
+nainstalujeme knihovnu axios
+     npm install axios
+
+pokud zavoláme (v editačním řádku prohlížeče) službu {JSON} Placeholder:
+   https://jsonplaceholder.typicode.com/posts?_limit=10
+   dostaneme 10 postů
+
+v komponentě App.vue:
+
+    <template>
+    ...
+        <my-button @click="fetchPosts">   <--vytvoříme tlačítko
+          dostat posty
+        </my-button>
+    ...
+    </template>
+
+    <script>
+    import PostForm from "@/components/PostForm";
+    import PostList from "@/components/PostList";
+    import axios from 'axios'            <--- importujeme 'axios'
+
+    export default {
+      ...
+      data() {
+        return {
+          posts: [],      <-- položku posts dáme prázdnou (vyhodíme původní mock-up posty)
+          ...
+        }
+      },
+      methods: {
+        ....
+        async fetchPosts() {     <-- asyns obslužná procedura
+          try {    <---v try bloku voláme await axios get(url)
+            const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+            console.log(response)  <-- seznam postů bude v response
+            this.posts = response.data
+            //console.log(this.posts)
+          } catch (e) {
+            alert('chyba čtení')
+          }
+        }
+      }
+    }
+    </script>
+
+nyní dostáváme seznam postů ze serveru

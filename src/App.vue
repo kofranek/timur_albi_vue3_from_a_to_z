@@ -1,17 +1,19 @@
 <template>
   <div class="app">
     <h1>Dialog s položkami</h1>
-    <input type="text" v-model.number="modificatorValue">
+    <my-button @click="fetchPosts">
+      dostat posty
+    </my-button>
     <my-button
         @click="showDialog"
         style="margin:15px 0;"
     >Vytvořit položku
     </my-button>
-<!--    <my-dialog v-model="dialogVisible">-->
-<!--      <post-form-->
-<!--          @create="createPost"-->
-<!--      />-->
-<!--    </my-dialog>-->
+    <!--    <my-dialog v-model="dialogVisible">-->
+    <!--      <post-form-->
+    <!--          @create="createPost"-->
+    <!--      />-->
+    <!--    </my-dialog>-->
     <my-dialog v-model:show="dialogVisible">
       <post-form
           @create="createPost"
@@ -28,6 +30,7 @@
 <script>
 import PostForm from "@/components/PostForm";
 import PostList from "@/components/PostList";
+import axios from 'axios'
 
 export default {
   components: {
@@ -37,14 +40,8 @@ export default {
   name: "App",
   data() {
     return {
-      posts: [
-        {id: 1, title: 'Hlavička dopisu 1', body: 'Obsah dopisu 1'},
-        {id: 2, title: 'Hlavička dopisu 2', body: 'Obsah dopisu 2'},
-        {id: 3, title: 'Hlavička dopisu 3', body: 'Obsah dopisu 3'},
-        {id: 4, title: 'Hlavička dopisu 4', body: 'Obsah dopisu 4'},
-      ],
+      posts: [],
       dialogVisible: false,
-      modificatorValue:''
     }
   },
   methods: {
@@ -65,7 +62,16 @@ export default {
     showDialog() {
       this.dialogVisible = true
     },
-
+    async fetchPosts() {
+      try {
+        const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+        console.log(response)
+        this.posts = response.data
+        console.log(this.posts)
+      } catch (e) {
+        alert('chyba čtení')
+      }
+    }
   }
 }
 </script>
