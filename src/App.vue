@@ -20,7 +20,9 @@
     <post-list
         :posts_props="posts"
         @clrPost="deletePost"
+        v-if="!isPostsLoading"
     />
+    <div v-else>Běží načítání dat</div>
   </div>
 </template>
 
@@ -39,6 +41,7 @@ export default {
     return {
       posts: [],
       dialogVisible: false,
+      isPostsLoading: false,
     }
   },
   methods: {
@@ -61,12 +64,15 @@ export default {
     },
     async fetchPosts() {
       try {
-        const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
-        console.log(response)
-        this.posts = response.data
-        console.log(this.posts)
+        this.isPostsLoading=true
+        setTimeout(async () => {
+          const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+          this.posts = response.data
+        }, 1000)
       } catch (e) {
         alert('chyba čtení')
+      } finally {
+        this.isPostsLoading=false
       }
     },
   },

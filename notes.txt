@@ -1175,6 +1175,22 @@ nyní dostáváme seznam postů ze serveru
 
 https://vuejs.org/guide/essentials/lifecycle.html
 
+beforeCreate()
+-> vytvoření (inicializace Option Api)
+created()
+-> kompilace template (pokud není předkompilován)
+beforeMount()
+-> montování (vykreslování a vytvoření uzlu DOM)
+mounted()
+
+beforeUpdate()
+-> obnova (updatování při změně dat )
+afterUpdate()
+
+beforeUnmount()
+-> zánik
+unmounted()
+
 v App.vue odstraníme tkačítko vyvolávající nasčtení postů,
 a posty budeme načítat hned po načtení stránky.
 Využijeme proto hook mounted:
@@ -1200,4 +1216,45 @@ Využijeme proto hook mounted:
         this.fetchPosts()
       },
     }
+    </script>
+
+****************************************************************
+20. Indikátor načítání dat
+****************************************************************
+
+    <template>
+        ...
+        <post-list
+            :posts_props="posts"
+            @clrPost="deletePost"
+            v-if="!isPostsLoading"   <--skryto když běží načítání dat
+        />
+        <div v-else>Běží načítání dat</div>  <--zobrazí se při načítání dat
+        ...
+    </template>
+
+    <script>
+    ...
+      data() {
+        return {
+          ....
+          isPostsLoading: false,   <--indikátor načítání dat
+        }
+      },
+      methods: {
+        ...
+        async fetchPosts() {
+          try {
+            this.isPostsLoading=true    <-- než spustíme načítání dat
+            setTimeout(async () => {
+              const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+              this.posts = response.data
+            }, 1000)
+          } catch (e) {
+            alert('chyba čtení')
+          } finally {
+            this.isPostsLoading=false  <-- po ukončení načítání dat
+          }
+        },
+        ....
     </script>
