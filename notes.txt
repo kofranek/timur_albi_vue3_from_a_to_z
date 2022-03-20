@@ -1168,3 +1168,36 @@ v komponentě App.vue:
     </script>
 
 nyní dostáváme seznam postů ze serveru
+
+****************************************************************
+19. Životní cyklus komponenty, hook mounted
+****************************************************************
+
+https://vuejs.org/guide/essentials/lifecycle.html
+
+v App.vue odstraníme tkačítko vyvolávající nasčtení postů,
+a posty budeme načítat hned po načtení stránky.
+Využijeme proto hook mounted:
+
+    <script>
+    ...
+    export default {
+      methods: {
+        ...
+        async fetchPosts() {
+          try {
+            const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+            console.log(response)
+            this.posts = response.data
+            console.log(this.posts)
+          } catch (e) {
+            alert('chyba čtení')
+          }
+        },
+      },
+      mounted() {               <-- hook mounted
+        console.log('mounted')
+        this.fetchPosts()
+      },
+    }
+    </script>

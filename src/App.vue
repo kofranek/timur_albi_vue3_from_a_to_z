@@ -1,9 +1,6 @@
 <template>
   <div class="app">
     <h1>Dialog s položkami</h1>
-    <my-button @click="fetchPosts">
-      dostat posty
-    </my-button>
     <my-button
         @click="showDialog"
         style="margin:15px 0;"
@@ -71,8 +68,12 @@ export default {
       } catch (e) {
         alert('chyba čtení')
       }
-    }
-  }
+    },
+  },
+  mounted() {
+    console.log('mounted')
+    this.fetchPosts()
+  },
 }
 </script>
 
