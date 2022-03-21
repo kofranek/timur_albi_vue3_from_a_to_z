@@ -1,22 +1,27 @@
 <template>
   <div class="app">
     <h1>Dialog s položkami</h1>
-    <my-button
-        @click="showDialog"
-        style="margin:15px 0;"
-    >Vytvořit položku
-    </my-button>
-    <!--    <my-dialog v-model="dialogVisible">-->
-    <!--      <post-form-->
-    <!--          @create="createPost"-->
-    <!--      />-->
-    <!--    </my-dialog>-->
+    <div class="app__btns">
+      <!--      <my-button-->
+      <!--          @click="showDialog"-->
+      <!--          style="margin:15px 0;"-->
+      <!--      >Vytvořit položku-->
+      <!--      </my-button>-->
+      <my-button
+          @click="showDialog"
+      >
+        vytvořit položku
+      </my-button>
+      <my-select
+          v-model="selectedSort"
+          :options="sortOptions"
+      />
+    </div>
     <my-dialog v-model:show="dialogVisible">
       <post-form
           @create="createPost"
       />
     </my-dialog>
-
     <post-list
         :posts_props="posts"
         @clrPost="deletePost"
@@ -42,6 +47,11 @@ export default {
       posts: [],
       dialogVisible: false,
       isPostsLoading: false,
+      selectedSort: '',
+      sortOptions: [
+        {value: 'title', name: 'Podle názvu'},
+        {value: 'body', name: 'Podle obsahu'}
+      ]
     }
   },
   methods: {
@@ -50,13 +60,6 @@ export default {
       this.dialogVisible = false
     },
     deletePost(post) {
-      // const idx = this.posts.findIndex((el) => {
-      //   return (el.id === post.id)
-      // })
-      // this.posts.splice(idx,1)
-      //***************************************************************
-      // místo findIndex a splice použijeme k odstranění položky filter
-      //***************************************************************
       this.posts = this.posts.filter(p => p.id !== post.id)
     },
     showDialog() {
@@ -64,7 +67,7 @@ export default {
     },
     async fetchPosts() {
       try {
-        this.isPostsLoading=true
+        this.isPostsLoading = true
         setTimeout(async () => {
           const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
           this.posts = response.data
@@ -72,12 +75,12 @@ export default {
       } catch (e) {
         alert('chyba čtení')
       } finally {
-        this.isPostsLoading=false
+        this.isPostsLoading = false
       }
     },
   },
   mounted() {
-    console.log('mounted')
+    //console.log('mounted')
     this.fetchPosts()
   },
 }
@@ -94,5 +97,10 @@ export default {
   padding: 20px;
 }
 
+.app__btns {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+}
 
 </style>

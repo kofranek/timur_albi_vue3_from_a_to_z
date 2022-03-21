@@ -1191,8 +1191,15 @@ beforeUnmount()
 -> zánik
 unmounted()
 
-v App.vue odstraníme tkačítko vyvolávající nasčtení postů,
-a posty budeme načítat hned po načtení stránky.
+v App.vue odstraníme tkačítko vyvolávající nastení postů,
+    <template>
+    ...
+        <my-button @click="fetchPosts">   <--odstraníme toto tlačítko
+          dostat posty
+        </my-button>
+    ...
+    </template>
+a posty budeme nyní načítat hned po načtení stránky.
 Využijeme proto hook mounted:
 
     <script>
@@ -1222,6 +1229,8 @@ Využijeme proto hook mounted:
 20. Indikátor načítání dat
 ****************************************************************
 
+V komponentě App.vue
+
     <template>
         ...
         <post-list
@@ -1246,7 +1255,7 @@ Využijeme proto hook mounted:
         async fetchPosts() {
           try {
             this.isPostsLoading=true    <-- než spustíme načítání dat
-            setTimeout(async () => {
+            setTimeout(async () => {    <-- zavedem setTimeout kvůli viditelnému zpoždění při načítání
               const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
               this.posts = response.data
             }, 1000)
@@ -1256,5 +1265,177 @@ Využijeme proto hook mounted:
             this.isPostsLoading=false  <-- po ukončení načítání dat
           }
         },
-        ....
+      }, <--konec methods
+      mounted() {
+        //console.log('mounted')
+        this.fetchPosts()        <--načítání postů vpláme po namontování
+      },
+    }
     </script>
+
+****************************************************************
+21. Rozbalovací seznam
+****************************************************************
+
+Vytvoříme rozbalovaací seznam pro třídění příspěvků
+
+nejdříve v @/components/UI vytvoříme nový soubor MySelect.vue
+
+    <template>
+      <select
+          style="cursor: pointer"   <-- aby se změnil kurzor na klikací
+          v-model="modelValue"      <-- alternetiva: v-model="vysledek"
+          @change="changeOption">
+        <option disabled value="">Zvolte ze seznamu</option> <--disablovaná opce
+        <option                     <-- zde vypíášeme všechny option
+            v-for="opt in options"  <-- budeme hledat v cylku v options
+            :key="opt.value"
+            :value="opt.value"
+        >
+          {{ opt.name }}         <-- budeme vypisovat obsah položky name
+        </option>
+      </select>
+    </template>
+
+    <script>
+    export default {
+      name: "MySelect",
+      props: {              <-- dva propsy modelValue a options
+        modelValue: {       <-- alternativa vysledek: {
+          type: String
+        },
+        options: {
+          type: Array,
+          default: () => []
+        }
+      },
+      methods: {
+        changeOption(event) {
+           this.$emit('update:modelValue', event.target.value)
+       <-- this.$emit('update:vysledek',... (alternativa)
+        }
+      }
+    }
+    </script>
+
+Upravíme @/components/UI/index.js:
+
+    import MyButton from "@/components/UI/MyButton"
+    import MyInput from "@/components/UI/MyInput"
+    import MyDialog from "@/components/UI/MyDialog"
+    import MySelect from "@/components/UI/MySelect"; <-- doplníme import
+
+    export default [
+        MyButton,
+        MyInput,
+        MyDialog,
+        MySelect                      <--přidáme MySelect
+    ]
+
+komponentu voláme v rodičovnské komponentě App.vue:
+(kde trochu upravíme volání tlačítka a rozbalovacího seznamu
+aby byli v jednom řádku - proto je zahrneme do společného div)
+
+App.vue:
+
+    <template>
+      <div class="app">
+        ....
+        <div class="app__btns">
+          <my-button
+              @click="showDialog"
+                  <-- zde jsme odstranili style="margin: 15px, 0;"
+                  <-- to přeneseme do stylů třídy app_btns
+          >
+            vytvořit položku
+          </my-button>
+          <my-select
+              v-model="selectedSort"  <--alternativa v-model:vysledek
+              :options="sortOptions"
+          />
+        </div>
+        ...
+    </template>
+
+    <script>
+    ...
+    export default {
+      data() {
+          ...
+          selectedSort: '',
+          sortOptions: [
+            {value: 'title', name: 'Podle názvu'},
+            {value: 'body', name: 'Podle obsahu'}
+          ]
+        }
+      },
+      ...
+    }
+    </script>
+
+    <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .app {
+      padding: 20px;
+    }
+    .app__btns {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0;    <-- upravíme styl
+    }
+    </style>
+
+
+NASTAVENÍ KURZORU NAD KLIKACÍMI OBJEKTY
+(tj. nad tlačítky, nad rozbalovacím seznamem
+a nad okolní plochou modálního okna  - kliknutí na ní okno zavíráme)
+
+Tlačítko - MyButton.vue:
+
+    <style scoped>
+    .btn {
+      /*margin-top: 15px;*/
+      padding: 10px 15px;
+      background: none;
+      color: teal;
+      border: 1px solid teal;
+      cursor: pointer;           <--- klikací kurzor
+    }
+    </style>
+
+Dialogové okno - MyDialog.vue:
+
+    <template>
+      <div class="dialog"
+           v-if="show"
+           style="cursor:pointer"    <--okolí modálního okna - klikací kurzor
+           @click="hideDialog">
+        <div @click.stop
+           class="dialog__content"
+           style="cursor: default">    <--vlastní modální okno - defaultní kurzor
+          <slot></slot>
+        </div>
+      </div>
+    </template>
+
+rozbalovací seznam - MySelect.vue
+
+    <template>
+      <select
+          style="cursor: pointer"   <-- aby se změnil kurzor na klikací
+          v-model="modelValue"
+          @change="changeOption">
+        <option disabled value="">Zvolte ze seznamu</option> <--disablovaná opce
+        <option
+            v-for="opt in options"
+            :key="opt.value"
+            :value="opt.value"
+        >
+          {{ opt.name }}
+        </option>
+      </select>
+    </template>

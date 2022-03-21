@@ -10,8 +10,9 @@
 <template>
   <div class="dialog"
        v-if="show"
+       style="cursor:pointer"
        @click="hideDialog">
-    <div @click.stop class="dialog__content">
+    <div @click.stop class="dialog__content" style="cursor: default">
       <slot></slot>
     </div>
   </div>
