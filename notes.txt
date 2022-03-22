@@ -1547,7 +1547,7 @@ Setřídění položek pomocí computed vlastností - v App.vue
 23. Animace transition group
 ****************************************************************
 
-viz dokumentace:
+iz dokumentace:
 https://vuejs.org/guide/built-ins/transition-group.html#transitiongroup
 
 v PostList.vue uzavřeme <post-item> do <transition-group>
