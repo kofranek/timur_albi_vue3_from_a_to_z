@@ -2,11 +2,6 @@
   <div class="app">
     <h1>Dialog s položkami</h1>
     <div class="app__btns">
-      <!--      <my-button-->
-      <!--          @click="showDialog"-->
-      <!--          style="margin:15px 0;"-->
-      <!--      >Vytvořit položku-->
-      <!--      </my-button>-->
       <my-button
           @click="showDialog"
       >
@@ -22,11 +17,6 @@
           @create="createPost"
       />
     </my-dialog>
-<!--        <post-list-->
-<!--            :posts_props="posts"-->
-<!--            @clrPost="deletePost"-->
-<!--            v-if="!isPostsLoading"-->
-<!--        />-->
     <post-list
         :posts_props="sortedPosts"
         @clrPost="deletePost"
