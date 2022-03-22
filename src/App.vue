@@ -22,8 +22,13 @@
           @create="createPost"
       />
     </my-dialog>
+<!--        <post-list-->
+<!--            :posts_props="posts"-->
+<!--            @clrPost="deletePost"-->
+<!--            v-if="!isPostsLoading"-->
+<!--        />-->
     <post-list
-        :posts_props="posts"
+        :posts_props="sortedPosts"
         @clrPost="deletePost"
         v-if="!isPostsLoading"
     />
@@ -83,7 +88,27 @@ export default {
     //console.log('mounted')
     this.fetchPosts()
   },
+  computed: {
+    sortedPosts() {
+      return [...this.posts].sort((post1, post2) =>
+          post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]))
+    }
+  },
+
+  watch: {
+    selectedSort(newValue) {  //když se mění hodnpta
+      console.log(newValue)
+    //   this.posts.sort((post1, post2) => {
+    //     // return post1[this.selectedSort]?.localeCompare(post2[this.selectedSort])
+    //     return post1[newValue]?.localeCompare(post2[newValue])
+    //   })
+    },
+    dialogVisible(newValue) {
+      console.log(newValue)
+    }
+  }
 }
+
 </script>
 
 <style>

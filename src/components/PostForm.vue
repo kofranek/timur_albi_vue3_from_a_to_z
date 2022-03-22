@@ -44,6 +44,14 @@ export default {
         }
       }
     },
+  },
+  watch: {
+    post: {  //pracuje to jak s objekty tak i s poli
+      handler(newVal) {
+        console.log(newVal)
+      },
+      deep: true
+    }
   }
 }
 

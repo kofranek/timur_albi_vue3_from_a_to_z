@@ -1439,3 +1439,106 @@ rozbalovací seznam - MySelect.vue
         </option>
       </select>
     </template>
+
+****************************************************************
+22. Watch a Computed
+****************************************************************
+
+Watch - sledují hodnotu a mění se při změně hodnoty (analog useEffect z Reactu)
+Computed - za běhu vypočítává hodontu položky - vrací hodnotu jako funkce a
+zapamatují si ji, pokud se nezmění vstupy (analog use Memo z Reactu)
+
+příklad watch v App.vue
+
+  watch: {
+    selectedSort(newValue) {  //když se mění hodnpta
+       console.log(newValue)
+     },
+    dialogVisible(newValue) {
+      console.log(newValue)
+    }
+  }
+
+
+Watch s polem nebo objektem
+
+ sledujeme např. v PostForm.vue objekt post:
+   data() {
+     return {
+       post: {
+         title: '',
+         body: ''
+       }
+     }
+   },
+ ...
+
+  watch: {
+    post: {  //pracuje to jak s objekty tak i s poli
+      handler(newVal) {           <--musíme mít handlet
+        console.log(newVal)
+      },
+      deep: true                  <--a položku deep:true
+    }
+  }
+
+Setřídění položek pomocí watch v App.vue
+******************************************
+  <post-list
+      :posts_props="posts"
+       @clrPost="deletePost"
+        v-if="!isPostsLoading"
+  />
+  ...
+  data() {
+    return {
+      posts: [],                 <-- pole posts, zaplňované při načítíní ze serveru
+      dialogVisible: false,
+      isPostsLoading: false,
+      selectedSort: '',         <-- vybraná položka z rozbalovacího seznamu
+      sortOptions: [
+        {value: 'title', name: 'Podle názvu'},
+        {value: 'body', name: 'Podle obsahu'}
+      ]
+    }
+  },
+
+  watch: {
+    selectedSort(newValue) {  //když se mění hodnpta
+       console.log(newValue)
+       this.posts.sort((post1, post2) => {
+         return post1[this.selectedSort]?.localeCompare(post2[this.selectedSort])
+       })
+     },
+     ...
+  }
+
+  alternativně - místo k selectedSort použijeme newValue:
+
+  watch: {
+    selectedSort(newValue) {  //když se mění hodnpta
+       console.log(newValue)
+       this.posts.sort((post1, post2) => {
+         //return post1[this.selectedSort]?.localeCompare(post2[this.selectedSort])
+         // místo k položce selectedSort se obracíme k newValue
+         return post1[newValue]?.localeCompare(post2[newValue])
+       })
+     },
+     ...
+  }
+
+Setřídění položek pomocí computed vlastností - v App.vue
+*********************************************************
+
+  <post-list
+      :posts_props="sortedPosts"    <-- místo :posts_props="posts"
+      @clrPost="deletePost"
+      v-if="!isPostsLoading"
+  />
+
+  computed: {
+    sortedPosts() {
+      return [...this.posts].sort((post1, post2) =>
+          post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]))
+    }
+  },
