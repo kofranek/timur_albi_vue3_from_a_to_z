@@ -64,4 +64,6 @@ export default {
 .list-leave-active {
   position: absolute;
 }
+
+
 </style>

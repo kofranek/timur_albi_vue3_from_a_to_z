@@ -1606,3 +1606,139 @@ a zadáme atriubut name v <transition-group name="list">
     </style>
 
 a případně můžeme styly upravovat (třeba translateX na translateY apod.)
+
+****************************************************************
+24. Vyhledávání v položkách. Redesign MyInput
+****************************************************************
+
+nejprve uděláme ve App.vue nový input:
+
+    <template>
+      <div class="app">
+        <h1>Dialog s položkami</h1>
+        <my-input
+            type="text"
+            v-model:value="searchQuery"        <-- načítáme do SearchQuery
+            placeholder="Název hledané položky..."
+        />
+        ...
+      </div>
+    </template>
+
+v App.vue definujeme novou modeliku searchQuery:
+
+    data() {
+      return {
+        posts: [],
+        dialogVisible: false,
+        isPostsLoading: false,
+        selectedSort: '',
+        searchQuery: '',      <--nová proměnná
+        sortOptions: [
+          {value: 'title', name: 'Podle názvu'},
+          {value: 'body', name: 'Podle obsahu'}
+        ]
+      }
+    },
+
+v App.vue definujeme novou computed vlastnost sortedAndSearchedPosts
+  - využijeme přitom tu předchozí sortedPosts:
+
+    computed: {
+      sortedPosts() {
+        return [...this.posts].sort((post1, post2) =>
+            post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]))
+      },
+      sortedAndSearchedPosts() {
+        console.log('this.searchQuery', this.searchQuery)
+         return this.sortedPosts
+             .filter(post =>
+                 post.title.toLowerCase().includes(this.searchQuery.toLowerCase()))
+      }
+    },
+
+v App.vue v <post-list> volaný porops místo :posts_props="sortedPosts"
+navážeme na novou computed proměnnou :posts_props="sortedAndSearchedPosts"
+
+    <template>
+      <div class="app">
+        <h1>Dialog s položkami</h1>
+        <my-input
+            type="text"
+            v-model:value="searchQuery"    <-- input načítáme do SearchQuery
+            placeholder="Název hledané položky..."
+        />
+    ....
+    <!--    <post-list-->
+    <!--        :posts_props="sortedPosts"-->
+    <!--        @clrPost="deletePost"-->
+    <!--        v-if="!isPostsLoading"-->
+    <!--    />-->
+        <post-list
+            :posts_props="sortedAndSearchedPosts"  <-- nová vazba
+            @clrPost="deletePost"
+            v-if="!isPostsLoading"
+        />
+        <div v-else>Běží načítání dat</div>
+      </div>
+    </template>
+
+
+REDESIGN MyInput.vue
+********************
+
+REDESIGN MyInput
+
+    <template>
+      <input
+          class='input'
+          type="text"
+          :modelValue="value"    <-- místo :value
+
+          @input="updateInput"
+      >
+    </template>
+
+    <script>
+    export default {
+      name: "MyInput",
+      props: {
+        value: [String, Number]
+      },
+      methods: {
+        updateInput(event) {
+          this.$emit('update:modelValue', event.target.value)
+          //<-- misto 'update:value'
+        }
+      }
+    }
+
+úprava volání MyInput v App.vue a v PostForm.vue:
+
+App.vue:
+    <template>
+      <div class="app">
+        <h1>Dialog s položkami</h1>
+        <my-input
+            type="text"
+            v-model="searchQuery"   <-- místo v-model:value=...
+            placeholder="Název hledané položky..."
+      ...
+    </template>
+
+
+PostForm.vue:
+<template>
+      <form @submit.prevent>
+        <h4>Vytvoření položky</h4>
+        <my-input type="text"
+                  placeholder="Název"
+                  v-model="post.title" <-- místo v-model:value
+        />
+        <my-input type="text"
+                  placeholder="Obsah"
+                  v-model="post.body" <--místo v-model:value
+        />
+       ....
+      </form>
+    </template>

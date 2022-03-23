@@ -1,9 +1,15 @@
 <template>
   <div class="app">
     <h1>Dialog s položkami</h1>
+    <my-input
+        type="text"
+        v-model="searchQuery"
+        placeholder="Název hledané položky..."
+    />
     <div class="app__btns">
       <my-button
           @click="showDialog"
+
       >
         vytvořit položku
       </my-button>
@@ -17,8 +23,13 @@
           @create="createPost"
       />
     </my-dialog>
+<!--    <post-list-->
+<!--        :posts_props="sortedPosts"-->
+<!--        @clrPost="deletePost"-->
+<!--        v-if="!isPostsLoading"-->
+<!--    />-->
     <post-list
-        :posts_props="sortedPosts"
+        :posts_props="sortedAndSearchedPosts"
         @clrPost="deletePost"
         v-if="!isPostsLoading"
     />
@@ -43,6 +54,7 @@ export default {
       dialogVisible: false,
       isPostsLoading: false,
       selectedSort: '',
+      searchQuery: '',
       sortOptions: [
         {value: 'title', name: 'Podle názvu'},
         {value: 'body', name: 'Podle obsahu'}
@@ -82,6 +94,12 @@ export default {
     sortedPosts() {
       return [...this.posts].sort((post1, post2) =>
           post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]))
+    },
+    sortedAndSearchedPosts() {
+      console.log('this.searchQuery', this.searchQuery)
+       return this.sortedPosts
+           .filter(post =>
+               post.title.toLowerCase().includes(this.searchQuery.toLowerCase()))
     }
   },
 
@@ -98,6 +116,8 @@ export default {
     }
   }
 }
+
+
 
 </script>
 

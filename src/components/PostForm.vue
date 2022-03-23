@@ -3,11 +3,11 @@
     <h4>Vytvoření položky</h4>
     <my-input type="text"
               placeholder="Název"
-              v-model:value="post.title"
+              v-model="post.title"
     />
     <my-input type="text"
               placeholder="Obsah"
-              v-model:value="post.body"
+              v-model="post.body"
     />
     <my-button
         @click="createPost"
@@ -16,7 +16,6 @@
       Vytvořit položku
     </my-button>
   </form>
-
 </template>
 
 <script>
