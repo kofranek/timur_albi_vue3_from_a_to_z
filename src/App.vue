@@ -23,17 +23,25 @@
           @create="createPost"
       />
     </my-dialog>
-<!--    <post-list-->
-<!--        :posts_props="sortedPosts"-->
-<!--        @clrPost="deletePost"-->
-<!--        v-if="!isPostsLoading"-->
-<!--    />-->
+    <!--    <post-list-->
+    <!--        :posts_props="sortedPosts"-->
+    <!--        @clrPost="deletePost"-->
+    <!--        v-if="!isPostsLoading"-->
+    <!--    />-->
     <post-list
         :posts_props="sortedAndSearchedPosts"
         @clrPost="deletePost"
         v-if="!isPostsLoading"
     />
     <div v-else>Běží načítání dat</div>
+    <div class="page__wrapper">
+      <div v-for="page in totalPages"
+           :key="page"
+           class="page"
+      >
+        {{ page }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -55,6 +63,9 @@ export default {
       isPostsLoading: false,
       selectedSort: '',
       searchQuery: '',
+      page: 1,
+      limit: 10,
+      totalPages: 0,
       sortOptions: [
         {value: 'title', name: 'Podle názvu'},
         {value: 'body', name: 'Podle obsahu'}
@@ -76,7 +87,17 @@ export default {
       try {
         this.isPostsLoading = true
         setTimeout(async () => {
-          const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+          //const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+          const response = await axios
+              .get('https://jsonplaceholder.typicode.com/posts', {
+                params: {
+                  _page: this.page,
+                  _limit: this.limit,
+                }
+              })
+          console.log('total posts', response.headers['x-total-count'])
+          this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
+          console.log('totalPages', this.totalPages)
           this.posts = response.data
         }, 1000)
       } catch (e) {
@@ -96,27 +117,26 @@ export default {
           post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]))
     },
     sortedAndSearchedPosts() {
-      console.log('this.searchQuery', this.searchQuery)
-       return this.sortedPosts
-           .filter(post =>
-               post.title.toLowerCase().includes(this.searchQuery.toLowerCase()))
+      //console.log('this.searchQuery', this.searchQuery)
+      return this.sortedPosts
+          .filter(post =>
+              post.title.toLowerCase().includes(this.searchQuery.toLowerCase()))
     }
   },
 
   watch: {
     selectedSort(newValue) {  //když se mění hodnpta
       console.log(newValue)
-    //   this.posts.sort((post1, post2) => {
-    //     // return post1[this.selectedSort]?.localeCompare(post2[this.selectedSort])
-    //     return post1[newValue]?.localeCompare(post2[newValue])
-    //   })
+      //   this.posts.sort((post1, post2) => {
+      //     // return post1[this.selectedSort]?.localeCompare(post2[this.selectedSort])
+      //     return post1[newValue]?.localeCompare(post2[newValue])
+      //   })
     },
     dialogVisible(newValue) {
       console.log(newValue)
     }
   }
 }
-
 
 
 </script>
@@ -138,4 +158,13 @@ export default {
   margin: 15px 0;
 }
 
+.page__wrapper {
+  display: flex;
+  margin-top: 15px;
+}
+
+.page {
+  border: 1px solid black;
+  padding: 10px;
+}
 </style>

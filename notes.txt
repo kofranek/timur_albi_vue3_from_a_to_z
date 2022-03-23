@@ -1685,7 +1685,7 @@ navážeme na novou computed proměnnou :posts_props="sortedAndSearchedPosts"
 
 
 REDESIGN MyInput.vue
-********************
+*************************************
 
 REDESIGN MyInput
 
@@ -1742,3 +1742,121 @@ PostForm.vue:
        ....
       </form>
     </template>
+
+****************************************************************
+25. Stránkování. Výstup podle čísla stránky
+****************************************************************
+
+opět využijeme službu {JSON} Placeholder
+     https://jsonplaceholder.typicode.com/
+     výpis 100 postů:
+     https://jsonplaceholder.typicode.com/posts
+
+     výpis prvních 10 postů:
+     https://jsonplaceholder.typicode.com/posts?_limit=10
+
+     výpis 10 postů, na straně 3:
+     https://jsonplaceholder.typicode.com/posts?_limit=10&_page=3
+
+     https://jsonplaceholder.typicode.com/posts?_limit=10&_page=11
+       výstup []
+
+v App.vue
+
+    <template>
+      <div class="app">
+        ....
+        <post-list       <-- načítáme posty při načtení stránky (hook mounted)
+            :posts_props="sortedAndSearchedPosts"  <-- computed vlastnost (pole postů)
+            @clrPost="deletePost"
+            v-if="!isPostsLoading"
+        />
+        <div v-else>Běží načítání dat</div>
+        <div class="page__wrapper">  <-- třídu "page__wraper" deklarujeme v pages
+          <div v-for="page in totalPages" <--budeme vypisovat pořadí stránek
+               :key="page"
+               class="page"    <-- třídu "page" deklarujeme v styles
+          >
+            {{ page }}
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+    ...
+    export default {
+      ...
+      data() {
+        return {
+          posts: [],  <--pole postů (načte se v fetchPosts)
+          ...
+          page: 1,  <-- pořadí stránky
+          limit: 10,  <-- počet postů na stránku
+          totalPages: 0,  <-- celkový počet stránek
+          ...
+        }
+      },
+      methods: {
+        ...
+        async fetchPosts() {  <-- upravíme načítání postů ze serveru
+          try {
+            this.isPostsLoading = true
+            setTimeout(async () => {
+              //const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+              //původně se načetlo prvních 10 postů
+              const response = await axios
+                  .get('https://jsonplaceholder.typicode.com/posts',
+                    params: {  <-- specifikace požadavků
+                      _page: this.page,    <-- pořadí stránky
+                      _limit: this.limit,  <-- počet postů na stránku
+                    }
+                  })
+              console.log('total posts', response.headers['x-total-count'])
+              this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
+              console.log('totalPages', this.totalPages)
+              this.posts = response.data
+            }, 1000)
+          } catch (e) {
+            alert('chyba čtení')
+          } finally {
+            this.isPostsLoading = false
+          }
+        },
+      },
+      mounted() {
+        //console.log('mounted')
+        this.fetchPosts()   <-- po načtení sgtránky volám e fetch
+      },
+      computed: {
+        sortedPosts() {
+          return [...this.posts].sort((post1, post2) =>
+              post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]))
+        },
+        sortedAndSearchedPosts() {  <--načte pole postů z posts pro <post-list>
+          //console.log('this.searchQuery', this.searchQuery)
+          return this.sortedPosts
+              .filter(post =>
+                  post.title.toLowerCase().includes(this.searchQuery.toLowerCase()))
+        }
+      },
+      ...
+    }
+    </script>
+
+    <style>
+    ...
+
+    .page__wrapper {   <-- nově deklarovaná třída
+      display: flex;   <-- stránky se budou vypisovat v řádce
+      margin-top: 15px;  <--odstup nahoře
+    }
+
+    .page {     <--nově deklarovaná třída
+      border: 1px solid black;  <--rámeček
+      padding: 10px;            <--vnitřní odstupy
+    }
+    </style>
+
+Výsledkem je seznam 10 čísel stránek v rámečcích
+zatím se ale po načtení vypisuje pouze 10 prvních postů
