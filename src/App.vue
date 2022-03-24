@@ -35,11 +35,15 @@
     />
     <div v-else>Běží načítání dat</div>
     <div class="page__wrapper">
-      <div v-for="page in totalPages"
-           :key="page"
+      <div v-for="pageNumber in totalPages"
+           :key="pageNumber"
            class="page"
+           :class="{
+             'current-page': page===pageNumber
+           }"
+           @click="changePage(pageNumber)"
       >
-        {{ page }}
+        {{ pageNumber }}
       </div>
     </div>
   </div>
@@ -83,6 +87,11 @@ export default {
     showDialog() {
       this.dialogVisible = true
     },
+    changePage(pageNumber) {
+      this.page = pageNumber
+      //this.fetchPosts()
+      //místo fetchPosts použijeme watch
+    },
     async fetchPosts() {
       try {
         this.isPostsLoading = true
@@ -123,8 +132,13 @@ export default {
               post.title.toLowerCase().includes(this.searchQuery.toLowerCase()))
     }
   },
-
   watch: {
+    page() {
+      //page(newValue){
+      //console.log('page=',newValue)
+      //zavolá se když se změní stránky (nemusíme vypisovat hodnotu)
+      this.fetchPosts()
+    },
     selectedSort(newValue) {  //když se mění hodnpta
       console.log(newValue)
       //   this.posts.sort((post1, post2) => {
@@ -137,7 +151,6 @@ export default {
     }
   }
 }
-
 
 </script>
 
@@ -166,5 +179,11 @@ export default {
 .page {
   border: 1px solid black;
   padding: 10px;
+  cursor: pointer;
+}
+
+.current-page {
+  border: 2px solid teal;
+
 }
 </style>

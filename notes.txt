@@ -1860,3 +1860,61 @@ v App.vue
 
 Výsledkem je seznam 10 čísel stránek v rámečcích
 zatím se ale po načtení vypisuje pouze 10 prvních postů
+
+**********************************************************************
+26. Dynamický binding tříd a stylů. Volba načtení podle zadané stránky
+**********************************************************************
+
+App.vue:
+    ...
+    <div class="page__wrapper">
+      <div v-for="pageNumber in totalPages"
+           :key="pageNumber"
+           class="page"
+           :class="{               <-- dynamicky binding třídy
+             'current-page': page===pageNumber
+           }"
+           @click="changePage(pageNumber)"  <-- změna stránky
+      >
+        {{ pageNumber }}
+      </div>
+    </div>
+    ..
+
+      methods: {
+        ....
+        changePage(pageNumber) {  <-- obslužná procedura
+          this.page = pageNumber
+          //this.fetchPosts()     <-- jedna z možností
+          //místo fetchPosts použijeme watch
+        },
+      ....
+      },
+      watch: {
+        page() {      <-- jimá možnost - zadáno spíše jako jako cvičení
+          //page(newValue){
+          //console.log('page=',newValue)
+          //zavolá se když se změní stránky (nemusíme vypisovat hodnotu)
+          this.fetchPosts()
+        },
+
+    <style>
+     ...
+    .page {
+      border: 1px solid black;
+      padding: 10px;
+      cursor: pointer;    <--přidán klikací kurzor
+    }
+
+    .current-page {
+      border: 2px solid teal;  <--vybraná stránka
+    }
+    </style>
+
+pro lepší čitelnost změn v PostItem přidáme vypisování id postu
+
+    <div>
+      <div>{{post_props.id}}</div>    <-- přidáno vypisování id
+      <div><strong>Název: </strong>{{ post_props.title }}</div>
+      <div><strong>Obsah: </strong>{{ post_props.body }}</div>
+    </div>
