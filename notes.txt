@@ -1255,14 +1255,18 @@ V komponentě App.vue
         async fetchPosts() {
           try {
             this.isPostsLoading=true    <-- než spustíme načítání dat
+
             setTimeout(async () => {    <-- zavedem setTimeout kvůli viditelnému zpoždění při načítání
               const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
               this.posts = response.data
+              this.isPostsLoading = false
+              console.log('Solving error: timeout isPostsLoading',this.isPostsLoading)
             }, 1000)
           } catch (e) {
             alert('chyba čtení')
           } finally {
-            this.isPostsLoading=false  <-- po ukončení načítání dat
+             //this.isPostsLoading = false //ERROR
+             console.log('ERROR: this.isPostsLoading = false ERROR')
           }
         },
       }, <--konec methods
@@ -1272,6 +1276,26 @@ V komponentě App.vue
       },
     }
     </script>
+
+******************************
+Oprava chyby
+*******************************
+        async fetchPosts() {
+          try {
+            this.isPostsLoading=true    <-- než spustíme načítání dat
+
+            setTimeout(async () => {    <-- zavedem setTimeout kvůli viditelnému zpoždění při načítání
+              ....
+              this.isPostsLoading = false  <-- nastaví se po 1000 msek (je v callback que)
+            }, 1000)
+          } catch (e) {
+            alert('chyba čtení')
+          } finally {
+             //this.isPostsLoading = false //ERROR  <-- nastaví se hned (je v Call Stack)
+             console.log('ERROR: this.isPostsLoading = false ERROR')
+          }
+        },
+
 
 ****************************************************************
 21. Rozbalovací seznam
@@ -1802,6 +1826,7 @@ v App.vue
         async fetchPosts() {  <-- upravíme načítání postů ze serveru
           try {
             this.isPostsLoading = true
+            console.log('fetchPosts: this.isPostsLoading = true')
             setTimeout(async () => {
               //const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
               //původně se načetlo prvních 10 postů
@@ -1816,11 +1841,16 @@ v App.vue
               this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
               console.log('totalPages', this.totalPages)
               this.posts = response.data
+
+              this.isPostsLoading = false
+              console.log('Solving error: timeout isPostsLoading',this.isPostsLoading)
+
             }, 1000)
           } catch (e) {
             alert('chyba čtení')
           } finally {
-            this.isPostsLoading = false
+            //this.isPostsLoading = false //ERROR
+            console.log('ERROR: this.isPostsLoading = false ERROR')
           }
         },
       },
@@ -1885,6 +1915,9 @@ App.vue:
         ....
         changePage(pageNumber) {  <-- obslužná procedura
           this.page = pageNumber
+          this.isPostsLoading = true //zobrazování indikátoru načítání stránky
+          console.log('Solving ERROR: change page this.isPostsLoading',this.isPostsLoading)
+
           //this.fetchPosts()     <-- jedna z možností
           //místo fetchPosts použijeme watch
         },
@@ -1918,3 +1951,4 @@ pro lepší čitelnost změn v PostItem přidáme vypisování id postu
       <div><strong>Název: </strong>{{ post_props.title }}</div>
       <div><strong>Obsah: </strong>{{ post_props.body }}</div>
     </div>
+

@@ -89,12 +89,16 @@ export default {
     },
     changePage(pageNumber) {
       this.page = pageNumber
+      this.isPostsLoading = true //zobrazování načítání stránky
+      console.log('change page this.isPostsLoading',this.isPostsLoading)
+
       //this.fetchPosts()
       //místo fetchPosts použijeme watch
     },
     async fetchPosts() {
       try {
         this.isPostsLoading = true
+        console.log('fetchPosts: this.isPostsLoading = true')
         setTimeout(async () => {
           //const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
           const response = await axios
@@ -108,11 +112,14 @@ export default {
           this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
           console.log('totalPages', this.totalPages)
           this.posts = response.data
+          this.isPostsLoading = false
+          console.log('Solving error: timeout isPostsLoading',this.isPostsLoading)
         }, 1000)
       } catch (e) {
         alert('chyba čtení')
       } finally {
-        this.isPostsLoading = false
+        //this.isPostsLoading = false //ERROR
+        console.log('ERROR: this.isPostsLoading = false ERROR')
       }
     },
   },
