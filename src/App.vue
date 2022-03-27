@@ -34,7 +34,7 @@
         v-if="!isPostsLoading"
     />
     <div v-else>Běží načítání dat</div>
-    <div class="observer"></div>
+    <div ref="observer" class="observer"></div>
     <!--    <div class="page__wrapper">-->
     <!--      <div v-for="pageNumber in totalPages"-->
     <!--           :key="pageNumber"-->
@@ -99,7 +99,7 @@ export default {
     async fetchPosts() {
       try {
         this.isPostsLoading = true
-        console.log('fetchPosts: this.isPostsLoading = true')
+        //console.log('fetchPosts: this.isPostsLoading = true')
         setTimeout(async () => {
           //const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
           const response = await axios
@@ -109,24 +109,28 @@ export default {
                   _limit: this.limit,
                 }
               })
-          console.log('total posts', response.headers['x-total-count'])
+          //console.log('total posts', response.headers['x-total-count'])
           this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
-          console.log('totalPages', this.totalPages)
+          //console.log('totalPages', this.totalPages)
           this.posts = response.data
           this.isPostsLoading = false
-          console.log('Solving error: timeout isPostsLoading', this.isPostsLoading)
-        }, 1000)
+          console.log('fetchPosts: timeout isPostsLoading', this.isPostsLoading)
+          this.page++
+          console.log('fetchPost - timeout, page increased to ', this.page)
+
+        }, 5000)
       } catch (e) {
         alert('chyba čtení')
       } finally {
+        console.log('fetchPost - finally, page ', this.page)
         //this.isPostsLoading = false //ERROR
-        console.log('ERROR: this.isPostsLoading = false ERROR')
+        //console.log('ERROR: this.isPostsLoading = false ERROR')
       }
     },
     async loadMorePosts() {
       try {
         this.isPostsLoading = true
-        console.log('fetchPosts: this.isPostsLoading = true')
+        //console.log('fetchPosts: this.isPostsLoading = true')
         setTimeout(async () => {
           //const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
           const response = await axios
@@ -136,32 +140,49 @@ export default {
                   _limit: this.limit,
                 }
               })
-          console.log('total posts', response.headers['x-total-count'])
+          //console.log('total posts', response.headers['x-total-count'])
           this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
-          console.log('totalPages', this.totalPages)
+          //console.log('totalPages', this.totalPages)
           this.posts = [...this.posts, ...response.data]
           this.isPostsLoading = false
-          console.log('Solving error: timeout isPostsLoading', this.isPostsLoading)
-        }, 1000)
+          console.log('loadMorePosts: timeout isPostsLoading', this.isPostsLoading)
+          this.page++
+          console.log('loadMorePosts: timeout page increased to ', this.page)
+
+        }, 10000)
       } catch (e) {
         alert('chyba čtení')
       } finally {
-        //this.isPostsLoading = false //ERROR
-        console.log('ERROR: this.isPostsLoading = false ERROR')
+        console.log('loadMorePosts: finally page =', this.page)
+         //this.isPostsLoading = false //ERROR
+        //console.log('ERROR: this.isPostsLoading = false ERROR')
       }
     },
   },
   mounted() {
     //console.log('mounted')
     this.fetchPosts()
+    console.log('zavolán fetchPosts()')
+    console.log(this.$refs.observer)
     const options = {
       rootMargin: '0px',
       threshold: 1.0
     }
-    const callback = function (entries, options){
+    const callback = (entries, options) => {
+      console.log('Překřížení')
+      console.log('entries=', entries)
+      if (entries[0].isIntersecting) {
+        console.log('jdu dovnitř page=',this.page)
+        if (this.page > 1) {
+          this.loadMorePosts()
+          console.log('zavolán loadMorePosts()')
+        }
+      } else {
+        console.log('jdu ven')
+      }
     }
     const observer = new IntersectionObserver(callback, options);
-
+    observer.observe(this.$refs.observer)
   },
   computed: {
     sortedPosts() {
