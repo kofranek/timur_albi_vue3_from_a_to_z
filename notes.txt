@@ -1952,3 +1952,96 @@ pro lepší čitelnost změn v PostItem přidáme vypisování id postu
       <div><strong>Obsah: </strong>{{ post_props.body }}</div>
     </div>
 
+**********************************************************************
+27. Dynamická paginace. Nekonečná páska. Intersection API
+**********************************************************************
+
+Na konci načítaného souboru postů umístíme nový div, s třídou observer
+a budeme detekovat překřížení s viditelným viewpoitem obrazovky
+Použijeme rozhhraní Intersectiion API
+
+https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+
+
+v App.Vue:
+
+    <template>
+        ...
+        <div v-else>Běží načítání dat</div>
+        <div class="observer"></div>         <--nový div s třídou observer
+
+        <!--    <div class="page__wrapper">-->           <--- odstraníme
+        <!--      <div v-for="pageNumber in totalPages"-->
+        <!--           :key="pageNumber"-->
+        <!--           class="page"-->
+        <!--           :class="{-->
+        <!--             'current-page': page===pageNumber-->
+        <!--           }"-->
+        <!--           @click="changePage(pageNumber)"-->
+        <!--      >-->
+        <!--        {{ pageNumber }}-->
+        <!--      </div>-->
+        <!--    </div>-->
+      </div>
+    </template>
+    ...
+    <script>
+    ....
+     async loadMorePosts() {   <--zkopírujeme fetch a upravíme
+       try {
+         this.isPostsLoading = true
+         console.log('fetchPosts: this.isPostsLoading = true')
+         setTimeout(async () => {
+           //const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+           const response = await axios
+               .get('https://jsonplaceholder.typicode.com/posts', {
+                 params: {
+                   _page: this.page,
+                   _limit: this.limit,
+                 }
+               })
+           console.log('total posts', response.headers['x-total-count'])
+           this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
+           console.log('totalPages', this.totalPages)
+           this.posts = [...this.posts, ...response.data] <--upraveno
+           this.isPostsLoading = false
+           console.log('Solving error: timeout isPostsLoading', this.isPostsLoading)
+         }, 1000)
+       } catch (e) {
+         alert('chyba čtení')
+       } finally {
+         //this.isPostsLoading = false //ERROR
+         console.log('ERROR: this.isPostsLoading = false ERROR')
+       }
+       ...
+       mounted() {
+         //console.log('mounted')
+         this.fetchPosts()
+         const options = {
+           rootMargin: '0px',
+           threshold: 1.0
+         }
+         const callback = function (entries, options){
+         }
+         const observer = new IntersectionObserver(callback, options);
+
+       },
+        ...
+
+        watch: {
+            // page() {
+            //   //page(newValue){
+            //   //console.log('page=',newValue)
+            //   //zavolá se když se změní stránky (nemusíme vypisovat hodnotu)
+            //   this.fetchPosts()
+            // },
+         ...
+        }
+    </script>
+    <style>
+    .observer {
+      height: 30px;
+      background: green;
+
+    }
+    </style>

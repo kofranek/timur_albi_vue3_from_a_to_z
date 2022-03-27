@@ -34,18 +34,19 @@
         v-if="!isPostsLoading"
     />
     <div v-else>Běží načítání dat</div>
-    <div class="page__wrapper">
-      <div v-for="pageNumber in totalPages"
-           :key="pageNumber"
-           class="page"
-           :class="{
-             'current-page': page===pageNumber
-           }"
-           @click="changePage(pageNumber)"
-      >
-        {{ pageNumber }}
-      </div>
-    </div>
+    <div class="observer"></div>
+    <!--    <div class="page__wrapper">-->
+    <!--      <div v-for="pageNumber in totalPages"-->
+    <!--           :key="pageNumber"-->
+    <!--           class="page"-->
+    <!--           :class="{-->
+    <!--             'current-page': page===pageNumber-->
+    <!--           }"-->
+    <!--           @click="changePage(pageNumber)"-->
+    <!--      >-->
+    <!--        {{ pageNumber }}-->
+    <!--      </div>-->
+    <!--    </div>-->
   </div>
 </template>
 
@@ -87,14 +88,14 @@ export default {
     showDialog() {
       this.dialogVisible = true
     },
-    changePage(pageNumber) {
-      this.page = pageNumber
-      this.isPostsLoading = true //zobrazování načítání stránky
-      console.log('change page this.isPostsLoading',this.isPostsLoading)
-
-      //this.fetchPosts()
-      //místo fetchPosts použijeme watch
-    },
+    // changePage(pageNumber) {
+    //   this.page = pageNumber
+    //   this.isPostsLoading = true //zobrazování načítání stránky
+    //   console.log('change page this.isPostsLoading',this.isPostsLoading)
+    //
+    //   //this.fetchPosts()
+    //   //místo fetchPosts použijeme watch
+    // },
     async fetchPosts() {
       try {
         this.isPostsLoading = true
@@ -113,7 +114,34 @@ export default {
           console.log('totalPages', this.totalPages)
           this.posts = response.data
           this.isPostsLoading = false
-          console.log('Solving error: timeout isPostsLoading',this.isPostsLoading)
+          console.log('Solving error: timeout isPostsLoading', this.isPostsLoading)
+        }, 1000)
+      } catch (e) {
+        alert('chyba čtení')
+      } finally {
+        //this.isPostsLoading = false //ERROR
+        console.log('ERROR: this.isPostsLoading = false ERROR')
+      }
+    },
+    async loadMorePosts() {
+      try {
+        this.isPostsLoading = true
+        console.log('fetchPosts: this.isPostsLoading = true')
+        setTimeout(async () => {
+          //const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+          const response = await axios
+              .get('https://jsonplaceholder.typicode.com/posts', {
+                params: {
+                  _page: this.page,
+                  _limit: this.limit,
+                }
+              })
+          console.log('total posts', response.headers['x-total-count'])
+          this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
+          console.log('totalPages', this.totalPages)
+          this.posts = [...this.posts, ...response.data]
+          this.isPostsLoading = false
+          console.log('Solving error: timeout isPostsLoading', this.isPostsLoading)
         }, 1000)
       } catch (e) {
         alert('chyba čtení')
@@ -126,6 +154,14 @@ export default {
   mounted() {
     //console.log('mounted')
     this.fetchPosts()
+    const options = {
+      rootMargin: '0px',
+      threshold: 1.0
+    }
+    const callback = function (entries, options){
+    }
+    const observer = new IntersectionObserver(callback, options);
+
   },
   computed: {
     sortedPosts() {
@@ -140,12 +176,12 @@ export default {
     }
   },
   watch: {
-    page() {
-      //page(newValue){
-      //console.log('page=',newValue)
-      //zavolá se když se změní stránky (nemusíme vypisovat hodnotu)
-      this.fetchPosts()
-    },
+    // page() {
+    //   //page(newValue){
+    //   //console.log('page=',newValue)
+    //   //zavolá se když se změní stránky (nemusíme vypisovat hodnotu)
+    //   this.fetchPosts()
+    // },
     selectedSort(newValue) {  //když se mění hodnpta
       console.log(newValue)
       //   this.posts.sort((post1, post2) => {
@@ -191,6 +227,11 @@ export default {
 
 .current-page {
   border: 2px solid teal;
+}
+
+.observer {
+  height: 30px;
+  background: green;
 
 }
 </style>
