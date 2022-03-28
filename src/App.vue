@@ -31,22 +31,10 @@
     <post-list
         :posts_props="sortedAndSearchedPosts"
         @clrPost="deletePost"
-        v-if="!isPostsLoading"
+
     />
-    <div v-else>Běží načítání dat</div>
+    <div v-if="isPostsLoading">Běží načítání dat</div>
     <div ref="observer" class="observer"></div>
-    <!--    <div class="page__wrapper">-->
-    <!--      <div v-for="pageNumber in totalPages"-->
-    <!--           :key="pageNumber"-->
-    <!--           class="page"-->
-    <!--           :class="{-->
-    <!--             'current-page': page===pageNumber-->
-    <!--           }"-->
-    <!--           @click="changePage(pageNumber)"-->
-    <!--      >-->
-    <!--        {{ pageNumber }}-->
-    <!--      </div>-->
-    <!--    </div>-->
   </div>
 </template>
 
@@ -88,14 +76,6 @@ export default {
     showDialog() {
       this.dialogVisible = true
     },
-    // changePage(pageNumber) {
-    //   this.page = pageNumber
-    //   this.isPostsLoading = true //zobrazování načítání stránky
-    //   console.log('change page this.isPostsLoading',this.isPostsLoading)
-    //
-    //   //this.fetchPosts()
-    //   //místo fetchPosts použijeme watch
-    // },
     async fetchPosts() {
       try {
         this.isPostsLoading = true
@@ -118,19 +98,18 @@ export default {
           this.page++
           console.log('fetchPost - timeout, page increased to ', this.page)
 
-        }, 5000)
+        }, 1000)
       } catch (e) {
         alert('chyba čtení')
       } finally {
-        console.log('fetchPost - finally, page ', this.page)
-        //this.isPostsLoading = false //ERROR
-        //console.log('ERROR: this.isPostsLoading = false ERROR')
+        //this.isPostsLoading = false //ERROR if we use setTime
+        //console.log('ERROR: this.isPostsLoading = false ERROR if we use setTime')
       }
     },
     async loadMorePosts() {
+      console.log('***loadMorePosts***')
       try {
         this.isPostsLoading = true
-        //console.log('fetchPosts: this.isPostsLoading = true')
         setTimeout(async () => {
           //const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
           const response = await axios
@@ -140,30 +119,20 @@ export default {
                   _limit: this.limit,
                 }
               })
-          //console.log('total posts', response.headers['x-total-count'])
           this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
-          //console.log('totalPages', this.totalPages)
+          console.log('**from setTimeout ** this.totalPages=',this.totalPages)
           this.posts = [...this.posts, ...response.data]
           this.isPostsLoading = false
-          console.log('loadMorePosts: timeout isPostsLoading', this.isPostsLoading)
           this.page++
-          console.log('loadMorePosts: timeout page increased to ', this.page)
-
-        }, 10000)
+        }, 5000)
       } catch (e) {
         alert('chyba čtení')
       } finally {
-        console.log('loadMorePosts: finally page =', this.page)
-         //this.isPostsLoading = false //ERROR
-        //console.log('ERROR: this.isPostsLoading = false ERROR')
+        console.log('finally (before setTimeout ended!')
       }
     },
   },
   mounted() {
-    //console.log('mounted')
-    this.fetchPosts()
-    console.log('zavolán fetchPosts()')
-    console.log(this.$refs.observer)
     const options = {
       rootMargin: '0px',
       threshold: 1.0
@@ -172,16 +141,17 @@ export default {
       console.log('Překřížení')
       console.log('entries=', entries)
       if (entries[0].isIntersecting) {
-        console.log('jdu dovnitř page=',this.page)
-        if (this.page > 1) {
-          this.loadMorePosts()
-          console.log('zavolán loadMorePosts()')
-        }
+          console.log('totalPages=',this.totalPages)
+          console.log('jdu dovnitř page=',this.page)
+          if (this.totalPages===0||this.page<=this.totalPages){
+            this.loadMorePosts()
+          }
       } else {
         console.log('jdu ven')
       }
     }
     const observer = new IntersectionObserver(callback, options);
+    console.log('this.$refs.observer=',this.$refs.observer)
     observer.observe(this.$refs.observer)
   },
   computed: {

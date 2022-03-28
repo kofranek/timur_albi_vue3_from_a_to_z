@@ -2049,3 +2049,120 @@ v App.Vue:
 **********************************************************************
 28. Refs Přístup k DOM elementu
 **********************************************************************
+
+Atribut ref:
+
+    <element ref="název" />
+    ....
+    this.$refs obsahuje DOM element: <element ref="název"/>
+
+příklad:
+    <template>
+        ...
+        <div ref="observer" class="observer"></div>
+        ...
+    </template>
+
+    <script>
+        ...
+        const observer = new IntersectionObserver(callback, options)
+        console.log('this.$refs.observer=',this.$refs.observer)
+        observer.observe(this.$refs.observer)
+        ...
+    </script>
+
+    na výstupu:
+    this.$refs.observer= <div class=observer"></div>
+
+Řešení vypisivání nekonečné pásky postů
+soubor App.vue
+
+    <template>
+         ....
+         <post-list
+            :posts_props="sortedAndSearchedPosts"
+            @clrPost="deletePost"
+        />
+        <div v-if="isPostsLoading">Běží načítání dat</div>
+        <div ref="observer" class="observer"></div>
+        ....
+    </template>
+
+    <script>
+    ...
+      data() {
+        return {
+          posts: [],
+          ...
+          isPostsLoading: false,
+          ...
+          page: 1,
+          limit: 10,
+          totalPages: 0,
+          ...
+        }
+      },
+      methods: {
+        ...
+        async loadMorePosts() {
+          console.log('***loadMorePosts***')
+          try {
+            this.isPostsLoading = true    <-- pošátak načítání postů
+            setTimeout(async () => {
+              //const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+              const response = await axios
+                  .get('https://jsonplaceholder.typicode.com/posts', {
+                    params: {
+                      _page: this.page,
+                      _limit: this.limit,
+                    }
+                  })
+              this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
+              console.log('**from setTimeout ** this.totalPages=',this.totalPages)
+              this.posts = [...this.posts, ...response.data]
+              this.isPostsLoading = false       <--ukončení načítání postů
+              this.page++                        <--inkrementace čísla stránky
+            }, 5000)
+          } catch (e) {
+            alert('chyba čtení')
+          } finally {
+            console.log('finally (before setTimeout ended!')
+          },
+        }
+      },
+      mounted() {
+        const options = {    <-- definice options pro konstruktor observeru
+          rootMargin: '0px',
+          threshold: 1.0
+        }
+        const callback = (entries, options) => {
+          console.log('Překřížení')
+          console.log('entries=', entries) <--jednoprvkové pole
+          if (entries[0].isIntersecting) { <--true když vlézám
+              console.log('totalPages=',this.totalPages)
+              console.log('jdu dovnitř page=',this.page)
+              if (this.totalPages===0||this.page<=this.totalPages){
+                            <--hodnota totalPages je spočítána až v loadMorePosts
+              }
+                this.loadMorePosts()
+              }
+          } else {
+            console.log('jdu ven')
+          }
+        }
+        const observer = new IntersectionObserver(callback, options);
+        console.log('this.$refs.observer=',this.$refs.observer)
+        observer.observe(this.$refs.observer)     <--odkaz na DOM element který je observerem
+      },
+
+    ...
+    </script>
+
+    <style>
+    ...
+    .observer {   <--definice czhledu observeru
+      height: 30px;
+      background: green;  <--v reýlné aplikaci vy měl být neviditelný
+
+    }
+    </style>
