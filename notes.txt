@@ -2166,3 +2166,57 @@ soubor App.vue
 
     }
     </style>
+
+************************
+     OPRAVA CHYBY
+************************
+Protože načítání postů trvá určitý čas (limitovaný pomocí setTimeout),
+ale otestování překřížení observeru a volání příslušné metody "loadMorePosts"
+může dojít ještě při načítání předchozích postů.
+Proto se musí zavést zámek "canLoadPosts"
+
+  data() {
+     ....
+      canLoadPosts:true,   <--- zámek na načítání postů
+     ....
+  },
+
+  async loadMorePosts() {
+      ...
+      try {
+        this.isPostsLoading = true
+        setTimeout(async () => {
+          ....
+          this.canLoadPosts=true     <--- opětovné otevření zámku
+        }, 5000)
+        ...
+      }
+  },
+
+  mounted() {
+    const options = {
+      rootMargin: '0px',
+      threshold: 1.0
+    }
+    const callback = (entries, options) => {
+      console.log('Překřížení')
+      console.log('entries=', entries)
+      if (entries[0].isIntersecting) {
+        console.log('totalPages=', this.totalPages)
+        console.log('jdu dovnitř page=', this.page)
+        if (this.totalPages === 0 || this.page <= this.totalPages) {
+          if (this.canLoadPosts) {  <--- testování otevření zámku
+            this.loadMorePosts()    <--- načítám pouze jestli je otevřený zámek
+            console.log('*** loudím posty ze stránky =', this.page, '*****')
+            this.canLoadPosts = false   <--- uzavřem zámek (otevře se až po načtení postů)
+          }
+
+        }
+      } else {
+        console.log('jdu ven')
+      }
+    }
+    const observer = new IntersectionObserver(callback, options);
+    console.log('this.$refs.observer=', this.$refs.observer)
+    observer.observe(this.$refs.observer)
+  },

@@ -59,6 +59,7 @@ export default {
       page: 1,
       limit: 10,
       totalPages: 0,
+      canLoadPosts: true,
       sortOptions: [
         {value: 'title', name: 'Podle názvu'},
         {value: 'body', name: 'Podle obsahu'}
@@ -120,10 +121,11 @@ export default {
                 }
               })
           this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
-          console.log('**from setTimeout ** this.totalPages=',this.totalPages)
+          console.log('**from setTimeout ** this.totalPages=', this.totalPages)
           this.posts = [...this.posts, ...response.data]
           this.isPostsLoading = false
           this.page++
+          this.canLoadPosts = true
         }, 5000)
       } catch (e) {
         alert('chyba čtení')
@@ -141,17 +143,22 @@ export default {
       console.log('Překřížení')
       console.log('entries=', entries)
       if (entries[0].isIntersecting) {
-          console.log('totalPages=',this.totalPages)
-          console.log('jdu dovnitř page=',this.page)
-          if (this.totalPages===0||this.page<=this.totalPages){
+        console.log('totalPages=', this.totalPages)
+        console.log('jdu dovnitř page=', this.page)
+        if (this.totalPages === 0 || this.page <= this.totalPages) {
+          if (this.canLoadPosts) {
             this.loadMorePosts()
+            console.log('*** loudím posty ze stránky =', this.page, '*****')
+            this.canLoadPosts = false
           }
+
+        }
       } else {
         console.log('jdu ven')
       }
     }
     const observer = new IntersectionObserver(callback, options);
-    console.log('this.$refs.observer=',this.$refs.observer)
+    console.log('this.$refs.observer=', this.$refs.observer)
     observer.observe(this.$refs.observer)
   },
   computed: {
